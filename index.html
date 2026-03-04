@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Interactive Teaching Resources · Dr. M. R. Hosseini · University of Melbourne</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,700;1,9..144,400&family=IBM+Plex+Sans:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ── RESET ── */
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+
+/* ── TOKENS ── */
+:root{
+  --uom:       #000F46;
+  --uom-mid:   #001A6E;
+  --uom-light: #002EA0;
+  --yam:       #FFD629;
+  --yam-dark:  #A84500;
+  --kook:      #46C8F0;
+  --rr:        #9FB825;
+  --white:     #FFFFFF;
+  --off:       #F2F4F8;
+  --text:      #0D1330;
+  --muted:     #5A6080;
+  --border:    rgba(0,15,70,.12);
+  --card-h:    280px;
+}
+
+body{
+  font-family:'IBM Plex Sans',Arial,sans-serif;
+  background:var(--white);
+  color:var(--text);
+  overflow-x:hidden;
+}
+
+/* ── TOPBAR ── */
+.topbar{
+  background:var(--uom);
+  color:var(--white);
+  font-size:.7rem;
+  letter-spacing:.5px;
+  padding:6px 40px;
+  display:flex;justify-content:space-between;align-items:center;
+  font-family:'JetBrains Mono',monospace;
+}
+.topbar a{color:var(--kook);text-decoration:none;}
+
+/* ── HEADER ── */
+header{
+  background:linear-gradient(160deg, var(--uom) 0%, var(--uom-mid) 55%, #001566 100%);
+  color:var(--white);
+  padding:48px 40px 56px;
+  position:relative;
+  overflow:hidden;
+}
+header::before{
+  content:'';position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse 60% 80% at 85% 40%, rgba(70,200,240,.07) 0%, transparent 70%),
+    radial-gradient(ellipse 40% 60% at 10% 80%, rgba(255,214,41,.05) 0%, transparent 60%);
+  pointer-events:none;
+}
+/* Decorative grid lines */
+header::after{
+  content:'';position:absolute;inset:0;
+  background-image:
+    linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
+  background-size:64px 64px;
+  pointer-events:none;
+}
+
+.hdr-inner{position:relative;z-index:1;max-width:1100px;margin:0 auto;}
+
+.uom-wordmark{
+  display:inline-flex;align-items:center;gap:12px;
+  margin-bottom:28px;
+}
+.uom-crest{
+  width:44px;height:44px;border-radius:4px;
+  background:var(--white);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Fraunces',Georgia,serif;
+  font-weight:700;font-size:1.5rem;color:var(--uom);
+  letter-spacing:-1px;flex-shrink:0;
+}
+.uom-name{
+  display:flex;flex-direction:column;
+  font-family:'IBM Plex Sans',Arial,sans-serif;
+  font-weight:300;font-size:.78rem;line-height:1.5;
+  letter-spacing:.3px;color:rgba(255,255,255,.85);
+}
+.uom-name strong{font-weight:500;font-size:.85rem;color:var(--white);}
+
+.hdr-title{
+  font-family:'Fraunces',Georgia,serif;
+  font-size:2.6rem;font-weight:700;
+  line-height:1.15;
+  letter-spacing:-.5px;
+  color:var(--white);
+  max-width:680px;
+  margin-bottom:14px;
+}
+.hdr-title em{
+  font-style:italic;
+  color:var(--yam);
+  font-weight:300;
+}
+.hdr-sub{
+  color:rgba(255,255,255,.65);
+  font-size:.9rem;font-weight:300;
+  max-width:560px;line-height:1.6;
+  margin-bottom:30px;
+}
+.hdr-meta{
+  display:flex;flex-wrap:wrap;gap:10px;
+  align-items:center;
+}
+.pill{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:5px 14px;
+  border-radius:20px;font-size:.72rem;font-weight:500;
+  letter-spacing:.3px;
+  font-family:'JetBrains Mono',monospace;
+}
+.pill-yam{background:var(--yam);color:var(--yam-dark);}
+.pill-out{border:1px solid rgba(255,255,255,.25);color:rgba(255,255,255,.8);}
+.pill-kook{background:rgba(70,200,240,.15);border:1px solid rgba(70,200,240,.4);color:var(--kook);}
+
+/* ── SECTION HEADER ── */
+.section{max-width:1100px;margin:0 auto;padding:52px 40px 0;}
+.section-hdr{
+  display:flex;justify-content:space-between;align-items:flex-end;
+  padding-bottom:20px;
+  border-bottom:2px solid var(--uom);
+  margin-bottom:36px;
+}
+.section-title{
+  font-family:'Fraunces',Georgia,serif;
+  font-size:1.6rem;font-weight:600;color:var(--uom);letter-spacing:-.2px;
+}
+.section-count{
+  font-family:'JetBrains Mono',monospace;font-size:.72rem;
+  color:var(--muted);letter-spacing:1px;
+}
+
+/* ── CARD GRID ── */
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill, minmax(310px, 1fr));
+  gap:24px;
+  padding-bottom:52px;
+}
+
+/* ── TOOL CARD ── */
+.card{
+  background:var(--white);
+  border:1.5px solid var(--border);
+  border-radius:12px;
+  overflow:hidden;
+  display:flex;flex-direction:column;
+  transition:transform .25s, box-shadow .25s, border-color .25s;
+  text-decoration:none;
+  color:inherit;
+  position:relative;
+}
+.card:hover{
+  transform:translateY(-4px);
+  box-shadow:0 16px 40px rgba(0,15,70,.12);
+  border-color:rgba(0,15,70,.3);
+}
+.card.featured{
+  border-color:var(--uom);
+  box-shadow:0 4px 20px rgba(0,15,70,.10);
+}
+.card.coming{opacity:.72;cursor:default;}
+.card.coming:hover{transform:none;box-shadow:none;}
+
+/* Card visual header */
+.card-vis{
+  height:var(--card-h);
+  position:relative;
+  overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+}
+/* Each card gets a unique visual */
+.vis-cement{background:linear-gradient(135deg,#080F1A 0%,#0E1E30 50%,#001566 100%);}
+.vis-concrete{background:linear-gradient(135deg,#1a1a1a 0%,#2d2d2d 50%,#1a2638 100%);}
+.vis-formwork{background:linear-gradient(135deg,#1A1200 0%,#3D2800 50%,#1a1500 100%);}
+.vis-ai{background:linear-gradient(135deg,#050A1A 0%,#0A1535 50%,#001020 100%);}
+.vis-mix{background:linear-gradient(135deg,#0A1A0A 0%,#0F2B0F 50%,#001500 100%);}
+.vis-precast{background:linear-gradient(135deg,#1a0a00 0%,#2d1500 50%,#1a0800 100%);}
+
+.card-icon{font-size:3rem;position:relative;z-index:1;}
+.card-badge{
+  position:absolute;top:12px;right:12px;z-index:2;
+  font-family:'JetBrains Mono',monospace;font-size:.63rem;letter-spacing:1px;
+  padding:3px 9px;border-radius:10px;font-weight:500;
+}
+.badge-live{background:rgba(70,200,240,.2);border:1px solid var(--kook);color:var(--kook);}
+.badge-soon{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.5);}
+.badge-gif{background:rgba(159,184,37,.2);border:1px solid var(--rr);color:var(--rr);}
+
+/* Canvas-based animated preview */
+.mini-canvas{position:absolute;inset:0;width:100%;height:100%;}
+
+/* ── Card Body ── */
+.card-body{padding:20px 22px 22px;flex:1;display:flex;flex-direction:column;}
+.card-subject{
+  font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:1.5px;
+  color:var(--muted);text-transform:uppercase;margin-bottom:6px;
+}
+.card-title{
+  font-family:'Fraunces',Georgia,serif;
+  font-size:1.15rem;font-weight:600;color:var(--uom);
+  line-height:1.25;margin-bottom:8px;letter-spacing:-.2px;
+}
+.card-desc{
+  font-size:.8rem;color:var(--muted);line-height:1.6;
+  flex:1;margin-bottom:16px;
+}
+.card-tags{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:16px;}
+.tag{
+  background:var(--off);border-radius:4px;
+  padding:2px 8px;font-size:.65rem;color:var(--muted);
+  font-family:'JetBrains Mono',monospace;letter-spacing:.3px;
+}
+.card-link{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:8px 16px;border-radius:6px;font-size:.78rem;font-weight:500;
+  text-decoration:none;transition:all .2s;
+  align-self:flex-start;
+  font-family:'IBM Plex Sans',Arial,sans-serif;
+}
+.link-primary{background:var(--uom);color:var(--white);}
+.link-primary:hover{background:var(--uom-light);}
+.link-ghost{border:1.5px solid var(--border);color:var(--muted);}
+.link-arrow::after{content:' →';}
+
+/* Featured ribbon */
+.ribbon{
+  position:absolute;top:0;left:0;z-index:3;
+  background:var(--yam);color:var(--yam-dark);
+  font-family:'JetBrains Mono',monospace;font-size:.6rem;font-weight:600;
+  letter-spacing:1px;padding:3px 10px;
+  border-bottom-right-radius:8px;
+}
+
+/* ── ANIMATED CANVAS PREVIEWS ── */
+
+/* ── HOW TO USE ── */
+.howto{
+  background:var(--off);
+  border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+  padding:40px 40px;
+  margin-top:8px;
+}
+.howto-inner{max-width:1100px;margin:0 auto;}
+.howto-title{
+  font-family:'Fraunces',Georgia,serif;
+  font-size:1.3rem;font-weight:600;color:var(--uom);
+  margin-bottom:24px;
+}
+.steps{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;}
+.step{display:flex;flex-direction:column;gap:8px;}
+.step-num{
+  width:28px;height:28px;border-radius:50%;
+  background:var(--uom);color:var(--white);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'JetBrains Mono',monospace;font-size:.75rem;font-weight:600;
+}
+.step-text{font-size:.78rem;line-height:1.5;color:var(--muted);}
+.step-text strong{color:var(--text);}
+.code-block{
+  background:var(--uom);color:var(--kook);
+  font-family:'JetBrains Mono',monospace;font-size:.72rem;
+  padding:12px 16px;border-radius:8px;line-height:1.8;
+  margin-top:24px;
+}
+
+/* ── FOOTER ── */
+footer{
+  background:var(--uom);
+  color:rgba(255,255,255,.55);
+  padding:32px 40px;
+  font-size:.75rem;line-height:1.7;
+}
+.foot-inner{max-width:1100px;margin:0 auto;display:flex;justify-content:space-between;flex-wrap:wrap;gap:20px;}
+.foot-col{}
+.foot-col strong{color:var(--white);font-size:.82rem;display:block;margin-bottom:4px;}
+.foot-col a{color:var(--kook);text-decoration:none;}
+.cricos{margin-top:16px;font-size:.68rem;letter-spacing:.3px;color:rgba(255,255,255,.3);}
+
+/* ── ANIMATED CANVAS ELEMENTS ── */
+.vis-layer{position:absolute;inset:0;pointer-events:none;}
+
+/* Responsive */
+@media(max-width:640px){
+  .hdr-title{font-size:1.8rem;}
+  header,
+  .section,
+  .howto{padding-left:20px;padding-right:20px;}
+  .topbar{padding:6px 20px;font-size:.62rem;}
+}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <span>Faculty of Architecture, Building and Planning · The University of Melbourne</span>
+  <span><a href="/cdn-cgi/l/email-protection#6f021d0a150e4107001c1c0a0601062f1a0106020a030d410a0b1a410e1a"><span class="__cf_email__" data-cfemail="e18c93849b80cf898e929284888f88a1948f888c848d83cf848594cf8094">[email&#160;protected]</span></a></span>
+</div>
+
+<!-- HEADER -->
+<header>
+  <div class="hdr-inner">
+    <div class="uom-wordmark">
+      <div class="uom-crest">M</div>
+      <div class="uom-name">
+        <strong>The University of Melbourne</strong>
+        Faculty of Architecture, Building and Planning
+      </div>
+    </div>
+
+    <h1 class="hdr-title">
+      Interactive Teaching<br>
+      <em>Resources & Simulators</em>
+    </h1>
+    <p class="hdr-sub">
+      Open-access digital tools, animated demonstrations, and interactive simulators
+      developed for undergraduate and graduate construction subjects.
+    </p>
+    <div class="hdr-meta">
+      <span class="pill pill-yam">Dr. M. Reza Hosseini</span>
+      <span class="pill pill-out">Senior Lecturer · Construction Technology</span>
+      <span class="pill pill-kook">ABPL90435 &nbsp;·&nbsp; ABPL90331</span>
+    </div>
+  </div>
+</header>
+
+<!-- ══ TOOLS SECTION ══ -->
+<div class="section">
+  <div class="section-hdr">
+    <h2 class="section-title">Interactive Simulators</h2>
+    <span class="section-count" id="toolCount">— tools</span>
+  </div>
+  <div class="grid" id="toolGrid">
+
+    <!-- ① CEMENT HYDRATION — LIVE -->
+    <a class="card featured" href="cement-hydration/index.html" id="card-cement">
+      <div class="card-vis vis-cement">
+        <canvas class="mini-canvas" id="cCanvas"></canvas>
+        <span class="card-badge badge-live">● LIVE</span>
+        <span class="ribbon">Featured</span>
+      </div>
+      <div class="card-body">
+        <div class="card-subject">ABPL90435 · Concrete Construction Systems</div>
+        <div class="card-title">Cement Hydration Simulator</div>
+        <div class="card-desc">Animated microstructure visualisation of C-S-H gel growth, Ca(OH)₂ crystallisation, and capillary porosity reduction. Adjust w/c ratio, cement type, SCM blends, and curing temperature.</div>
+        <div class="card-tags">
+          <span class="tag">α(t) model</span>
+          <span class="tag">Powers' porosity</span>
+          <span class="tag">Heat evolution</span>
+          <span class="tag">5 cement types</span>
+          <span class="tag">SCM blends</span>
+        </div>
+        <span class="card-link link-primary link-arrow">Launch Simulator</span>
+      </div>
+    </a>
+
+    <!-- ② CONCRETE MIX DESIGN — COMING SOON -->
+    <div class="card coming" id="card-mix">
+      <div class="card-vis vis-mix">
+        <canvas class="mini-canvas" id="mCanvas"></canvas>
+        <span class="card-badge badge-soon">COMING SOON</span>
+      </div>
+      <div class="card-body">
+        <div class="card-subject">ABPL90435 · Concrete Construction Systems</div>
+        <div class="card-title">Concrete Mix Design Calculator</div>
+        <div class="card-desc">Step-through AS 1379 mix design procedure. Input target strength, slump, and exposure class to generate proportioned mix with aggregate grading curves.</div>
+        <div class="card-tags">
+          <span class="tag">AS 1379</span>
+          <span class="tag">Grading curves</span>
+          <span class="tag">Exposure classes</span>
+        </div>
+        <span class="card-link link-ghost">In Development</span>
+      </div>
+    </div>
+
+    <!-- ③ FORMWORK PRESSURE — COMING SOON -->
+    <div class="card coming" id="card-formwork">
+      <div class="card-vis vis-formwork">
+        <canvas class="mini-canvas" id="fCanvas"></canvas>
+        <span class="card-badge badge-soon">COMING SOON</span>
+      </div>
+      <div class="card-body">
+        <div class="card-subject">ABPL90435 · Concrete Construction Systems</div>
+        <div class="card-title">Formwork Pressure Visualiser</div>
+        <div class="card-desc">Animated lateral pressure diagram for wall and column formwork to AS 3610. Vary pour rate, temperature, and concrete density to see live pressure envelope updates.</div>
+        <div class="card-tags">
+          <span class="tag">AS 3610</span>
+          <span class="tag">Pour rate</span>
+          <span class="tag">Pressure diagrams</span>
+        </div>
+        <span class="card-link link-ghost">In Development</span>
+      </div>
+    </div>
+
+    <!-- ④ AI IN CONSTRUCTION — COMING SOON -->
+    <div class="card coming" id="card-ai">
+      <div class="card-vis vis-ai">
+        <canvas class="mini-canvas" id="aCanvas"></canvas>
+        <span class="card-badge badge-soon">COMING SOON</span>
+      </div>
+      <div class="card-body">
+        <div class="card-subject">ABPL90331 · AI in Construction</div>
+        <div class="card-title">AI Hype Cycle Explorer</div>
+        <div class="card-desc">Interactive Gartner Hype Cycle for construction AI technologies. Click any technology to see adoption stage, case studies, and readiness metrics for the built environment.</div>
+        <div class="card-tags">
+          <span class="tag">Gartner Hype Cycle</span>
+          <span class="tag">AI maturity</span>
+          <span class="tag">Construction tech</span>
+        </div>
+        <span class="card-link link-ghost">In Development</span>
+      </div>
+    </div>
+
+    <!-- ⑤ PRECAST — GIF DEMO -->
+    <div class="card coming" id="card-precast">
+      <div class="card-vis vis-precast">
+        <canvas class="mini-canvas" id="pCanvas"></canvas>
+        <span class="card-badge badge-gif">GIF / VIDEO</span>
+      </div>
+      <div class="card-body">
+        <div class="card-subject">ABPL90435 · Concrete Construction Systems</div>
+        <div class="card-title">Precast Erection Sequence</div>
+        <div class="card-desc">Animated erection sequence for precast concrete frame structures, showing connection details, temporary propping, and tolerance management at joints.</div>
+        <div class="card-tags">
+          <span class="tag">Precast</span>
+          <span class="tag">Connections</span>
+          <span class="tag">AS 3850</span>
+        </div>
+        <span class="card-link link-ghost">In Development</span>
+      </div>
+    </div>
+
+    <!-- ⑥ POST-TENSION — COMING -->
+    <div class="card coming" id="card-pt">
+      <div class="card-vis" style="background:linear-gradient(135deg,#0a0020 0%,#150035 50%,#0a0015 100%)">
+        <canvas class="mini-canvas" id="ptCanvas"></canvas>
+        <span class="card-badge badge-soon">COMING SOON</span>
+      </div>
+      <div class="card-body">
+        <div class="card-subject">ABPL90435 · Concrete Construction Systems</div>
+        <div class="card-title">Post-Tensioning Force Diagram</div>
+        <div class="card-desc">Interactive tendon layout and jacking force calculator. Visualise friction losses, wobble coefficients, and stress profiles along the tendon profile.</div>
+        <div class="card-tags">
+          <span class="tag">Post-tension</span>
+          <span class="tag">Friction losses</span>
+          <span class="tag">Stress profiles</span>
+        </div>
+        <span class="card-link link-ghost">In Development</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══ HOW TO USE ══ -->
+<div class="howto">
+  <div class="howto-inner">
+    <div class="howto-title">How to add a new tool to this page</div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-text"><strong>Create a subfolder</strong><br>Add a new directory (e.g. <code>concrete-mix/</code>) containing an <code>index.html</code> file.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-text"><strong>Self-contained HTML</strong><br>Each tool is a single standalone <code>index.html</code> using CDN dependencies — no build step required.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-text"><strong>Add a card here</strong><br>Copy a card block in this file, update the <code>href</code>, title, description, and tags.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-text"><strong>Push to GitHub</strong><br>Commit and push. GitHub Pages automatically deploys within ~60 seconds.</div>
+      </div>
+    </div>
+    <div class="code-block">
+      <div style="color:rgba(255,255,255,.35);margin-bottom:6px;"># Recommended repository structure</div>
+      your-github-username.github.io/<br>
+      ├── index.html &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:rgba(255,255,255,.3)">← this page</span><br>
+      ├── cement-hydration/<br>
+      │&nbsp;&nbsp;&nbsp;└── index.html &nbsp;&nbsp;<span style="color:rgba(255,255,255,.3)">← simulator</span><br>
+      ├── concrete-mix/<br>
+      │&nbsp;&nbsp;&nbsp;└── index.html<br>
+      └── formwork-pressure/<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;└── index.html
+    </div>
+  </div>
+</div>
+
+<!-- ══ FOOTER ══ -->
+<footer>
+  <div class="foot-inner">
+    <div class="foot-col">
+      <strong>Dr. M. Reza Hosseini</strong>
+      Senior Lecturer in Construction Technology<br>
+      Faculty of Architecture, Building and Planning<br>
+      The University of Melbourne
+    </div>
+    <div class="foot-col">
+      <strong>Contact</strong>
+      <a href="/cdn-cgi/l/email-protection#3e534c5b445f1056514d4d5b5750577e4b5057535b525c105b5a4b105f4b"><span class="__cf_email__" data-cfemail="c1acb3a4bba0efa9aeb2b2a4a8afa881b4afa8aca4ada3efa4a5b4efa0b4">[email&#160;protected]</span></a><br>
+      +61 404 724 858<br>
+    </div>
+    <div class="foot-col">
+      <strong>Subjects</strong>
+      ABPL90435 · Concrete Construction Systems<br>
+      ABPL90331 · Artificial Intelligence in Construction<br>
+    </div>
+  </div>
+  <div class="foot-inner">
+    <div class="cricos">
+      © The University of Melbourne &nbsp;·&nbsp; CRICOS Provider Code: 00116K &nbsp;·&nbsp;
+      These materials are developed for educational use in enrolled subjects only.
+    </div>
+  </div>
+</footer>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+// ════════════════════════════════════════════
+// CARD COUNT
+// ════════════════════════════════════════════
+const total = document.querySelectorAll('.card').length;
+const live  = document.querySelectorAll('.badge-live').length;
+document.getElementById('toolCount').textContent = `${total} tools · ${live} live`;
+
+// ════════════════════════════════════════════
+// MINI CANVAS ANIMATIONS
+// ════════════════════════════════════════════
+// Utility
+function rng(seed){ let s=seed; return ()=>{ s=(s*16807+0)%2147483647; return(s-1)/2147483646;}; }
+
+// ── ① Cement Hydration mini ──
+(function cementAnim(){
+  const cvs = document.getElementById('cCanvas');
+  if(!cvs) return;
+  function resize(){ cvs.width=cvs.offsetWidth; cvs.height=cvs.offsetHeight; }
+  resize();
+  const ctx = cvs.getContext('2d');
+  let t=0;
+  const r = rng(42);
+  const particles = Array.from({length:80}, ()=>({
+    x:r()*1, y:r()*1, rad:0.02+r()*0.08, jit:r()
+  }));
+  function draw(){
+    const W=cvs.width, H=cvs.height;
+    if(!W||!H){ requestAnimationFrame(draw); return; }
+    t += 0.004;
+    const alpha = Math.min(0.85, (Math.sin(t)+1)/2);
+    // Background
+    ctx.fillStyle=`rgb(${Math.round(8+alpha*5)},${Math.round(15+alpha*8)},${Math.round(26+alpha*10)})`;
+    ctx.fillRect(0,0,W,H);
+    // CSH fill
+    if(alpha>.1){ctx.fillStyle=`rgba(165,175,185,${alpha*.4})`;ctx.fillRect(0,0,W,H);}
+    // Particles
+    particles.forEach(p=>{
+      const hf=Math.max(0,1-alpha*(0.5+p.jit*.5));
+      const pr=p.rad*hf*W;
+      // shell
+      if(alpha>.05&&pr>0){
+        const sr=pr+p.rad*alpha*0.8*W;
+        const g=ctx.createRadialGradient(p.x*W,p.y*H,pr,p.x*W,p.y*H,sr);
+        g.addColorStop(0,'rgba(190,200,210,.7)');
+        g.addColorStop(1,'rgba(190,200,210,0)');
+        ctx.fillStyle=g;
+        ctx.beginPath();ctx.arc(p.x*W,p.y*H,sr,0,Math.PI*2);ctx.fill();
+      }
+      if(pr>.5){
+        ctx.fillStyle='#6B7280';
+        ctx.beginPath();ctx.arc(p.x*W,p.y*H,pr,0,Math.PI*2);ctx.fill();
+      }
+    });
+    // alpha label
+    ctx.fillStyle='rgba(0,0,0,.55)';ctx.fillRect(W-72,H-22,66,16);
+    ctx.fillStyle='#8EAEC4';ctx.font='10px JetBrains Mono,monospace';
+    ctx.fillText('α = '+alpha.toFixed(3),W-68,H-8);
+    requestAnimationFrame(draw);
+  }
+  window.addEventListener('resize',()=>{resize();});
+  draw();
+})();
+
+// ── ② Mix Design mini — aggregate scatter ──
+(function mixAnim(){
+  const cvs=document.getElementById('mCanvas'); if(!cvs) return;
+  function resize(){cvs.width=cvs.offsetWidth;cvs.height=cvs.offsetHeight;}
+  resize();
+  const ctx=cvs.getContext('2d');
+  const r=rng(99);
+  const agg=Array.from({length:55},()=>({
+    x:r(),y:r(),rad:.012+r()*.04,
+    col:[`hsl(${25+r()*20},${20+r()*20}%,${30+r()*25}%)`,
+         `hsl(${200+r()*30},${40+r()*20}%,${35+r()*20}%)`][r()>.7?1:0]
+  }));
+  let t=0;
+  function draw(){
+    const W=cvs.width,H=cvs.height;
+    if(!W||!H){requestAnimationFrame(draw);return;}
+    t+=.005;
+    ctx.fillStyle='#0F2B0F';ctx.fillRect(0,0,W,H);
+    // paste
+    ctx.fillStyle=`rgba(20,40,20,${.5+Math.sin(t)*.15})`;ctx.fillRect(0,0,W,H);
+    agg.forEach(a=>{
+      ctx.fillStyle=a.col;
+      ctx.beginPath();ctx.arc(a.x*W,a.y*H,a.rad*W,0,Math.PI*2);ctx.fill();
+    });
+    // scanning line
+    const lx=((Math.sin(t*.7)+1)/2)*W;
+    ctx.strokeStyle='rgba(159,184,37,.4)';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(lx,0);ctx.lineTo(lx,H);ctx.stroke();
+    // fcu label
+    const fcu=Math.round(25+Math.sin(t*.3)*8);
+    ctx.fillStyle='rgba(0,0,0,.55)';ctx.fillRect(W-80,H-22,74,16);
+    ctx.fillStyle='#9FB825';ctx.font='10px JetBrains Mono,monospace';
+    ctx.fillText(`f'c = ${fcu} MPa`,W-76,H-8);
+    requestAnimationFrame(draw);
+  }
+  window.addEventListener('resize',()=>resize());
+  draw();
+})();
+
+// ── ③ Formwork pressure ──
+(function formAnim(){
+  const cvs=document.getElementById('fCanvas'); if(!cvs) return;
+  function resize(){cvs.width=cvs.offsetWidth;cvs.height=cvs.offsetHeight;}
+  resize();
+  const ctx=cvs.getContext('2d');
+  let t=0;
+  function draw(){
+    const W=cvs.width,H=cvs.height;
+    if(!W||!H){requestAnimationFrame(draw);return;}
+    t+=.012;
+    ctx.fillStyle='#1A1200';ctx.fillRect(0,0,W,H);
+    // concrete column
+    const cw=W*.32, cx=W*.35;
+    ctx.fillStyle='#2A2310';ctx.fillRect(cx,0,cw,H);
+    // pour level animated
+    const pourY=(Math.sin(t*.4)+1)/2*H;
+    // concrete fill
+    ctx.fillStyle='rgba(100,90,50,.55)';ctx.fillRect(cx,pourY,cw,H-pourY);
+    // pressure diagram (right side)
+    const maxP=W*.22;
+    ctx.strokeStyle='rgba(255,166,41,.7)';ctx.lineWidth=1.5;
+    ctx.beginPath();
+    const px=cx+cw+8;
+    for(let y=0;y<H;y+=2){
+      const depth=Math.max(0,y-pourY);
+      const p=(depth/H)*maxP;
+      if(y===0||y===Math.max(0,Math.round(pourY))||y===pourY+2){
+        if(y<pourY){ctx.moveTo(px,y);}else{ctx.moveTo(px+p,y);}
+      } else {ctx.lineTo(px+p,y);}
+    }
+    ctx.stroke();
+    // fill
+    ctx.fillStyle='rgba(255,166,41,.08)';
+    ctx.beginPath();ctx.moveTo(px,pourY);
+    for(let y=pourY;y<H;y+=2){const p=((y-pourY)/H)*maxP;ctx.lineTo(px+p,y);}
+    ctx.lineTo(px,H);ctx.closePath();ctx.fill();
+    // label
+    ctx.fillStyle='rgba(0,0,0,.55)';ctx.fillRect(W-88,H-22,82,16);
+    ctx.fillStyle='#FFA629';ctx.font='10px JetBrains Mono,monospace';
+    const pr=Math.round(((H-pourY)/H)*30);
+    ctx.fillText(`P_max=${pr} kPa`,W-84,H-8);
+    requestAnimationFrame(draw);
+  }
+  window.addEventListener('resize',()=>resize());
+  draw();
+})();
+
+// ── ④ AI hype cycle ──
+(function aiAnim(){
+  const cvs=document.getElementById('aCanvas'); if(!cvs) return;
+  function resize(){cvs.width=cvs.offsetWidth;cvs.height=cvs.offsetHeight;}
+  resize();
+  const ctx=cvs.getContext('2d');
+  let t=0;
+  function hypeY(x,W,H){
+    const nx=x/W;
+    return H*.8 - H*.55*(
+      Math.exp(-Math.pow((nx-.12)/.06,2))*.85   // peak
+      - Math.exp(-Math.pow((nx-.28)/.06,2))*.45 // trough
+      + Math.exp(-Math.pow((nx-.55)/.09,2))*.35 // plateau slope
+      + nx*.15
+    );
+  }
+  function draw(){
+    const W=cvs.width,H=cvs.height;
+    if(!W||!H){requestAnimationFrame(draw);return;}
+    t+=.008;
+    ctx.fillStyle='#050A1A';ctx.fillRect(0,0,W,H);
+    // grid lines
+    ctx.strokeStyle='rgba(70,200,240,.04)';ctx.lineWidth=1;
+    for(let gx=0;gx<W;gx+=W/5){ctx.beginPath();ctx.moveTo(gx,0);ctx.lineTo(gx,H);ctx.stroke();}
+    // curve
+    ctx.strokeStyle='rgba(70,200,240,.7)';ctx.lineWidth=2;
+    ctx.beginPath();
+    for(let x=0;x<=W;x+=2){const y=hypeY(x,W,H);x===0?ctx.moveTo(x,y):ctx.lineTo(x,y);}
+    ctx.stroke();
+    // fill under
+    ctx.fillStyle='rgba(70,200,240,.05)';
+    ctx.beginPath();ctx.moveTo(0,H);
+    for(let x=0;x<=W;x+=2){ctx.lineTo(x,hypeY(x,W,H));}
+    ctx.lineTo(W,H);ctx.closePath();ctx.fill();
+    // scanning dot
+    const sx=((Math.sin(t)+1)/2)*W;
+    const sy=hypeY(sx,W,H);
+    ctx.fillStyle='rgba(70,200,240,.2)';
+    ctx.beginPath();ctx.arc(sx,sy,16,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='#46C8F0';
+    ctx.beginPath();ctx.arc(sx,sy,4,0,Math.PI*2);ctx.fill();
+    // label
+    ctx.fillStyle='rgba(0,0,0,.55)';ctx.fillRect(W-96,H-22,90,16);
+    ctx.fillStyle='#46C8F0';ctx.font='9px JetBrains Mono,monospace';
+    const phases=['Innovation','Peak','Trough','Slope','Plateau'];
+    const pi=Math.floor(((Math.sin(t)+1)/2)*phases.length);
+    ctx.fillText(phases[Math.min(pi,phases.length-1)],W-92,H-8);
+    requestAnimationFrame(draw);
+  }
+  window.addEventListener('resize',()=>resize());
+  draw();
+})();
+
+// ── ⑤ Precast ──
+(function precastAnim(){
+  const cvs=document.getElementById('pCanvas'); if(!cvs) return;
+  function resize(){cvs.width=cvs.offsetWidth;cvs.height=cvs.offsetHeight;}
+  resize();
+  const ctx=cvs.getContext('2d');
+  let t=0;
+  const panels=[
+    {tx:.12,ty:.6,w:.18,h:.32,placed:0.0},
+    {tx:.35,ty:.6,w:.18,h:.32,placed:0.3},
+    {tx:.58,ty:.6,w:.18,h:.32,placed:0.6},
+    {tx:.12,ty:.22,w:.18,h:.32,placed:0.9},
+    {tx:.35,ty:.22,w:.18,h:.32,placed:1.2},
+  ];
+  function draw(){
+    const W=cvs.width,H=cvs.height;
+    if(!W||!H){requestAnimationFrame(draw);return;}
+    t+=.008;
+    ctx.fillStyle='#1a0a00';ctx.fillRect(0,0,W,H);
+    // grid floor
+    ctx.strokeStyle='rgba(255,166,41,.08)';ctx.lineWidth=1;
+    for(let y=H*.5;y<H;y+=12){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+    // panels
+    panels.forEach(p=>{
+      const prog=Math.max(0,Math.min(1,(Math.sin(t*.5+p.placed)+1)/2));
+      const startY=-.1; const endY=p.ty;
+      const py=startY+(endY-startY)*prog;
+      const op=.3+prog*.65;
+      ctx.fillStyle=`rgba(100,90,80,${op})`;
+      ctx.strokeStyle=`rgba(200,180,140,${op*.5})`;ctx.lineWidth=1;
+      ctx.fillRect(p.tx*W, py*H, p.w*W, p.h*H);
+      ctx.strokeRect(p.tx*W, py*H, p.w*W, p.h*H);
+      // connection detail dot
+      if(prog>.85){
+        ctx.fillStyle='rgba(255,166,41,.9)';
+        ctx.beginPath();ctx.arc((p.tx+p.w/2)*W,py*H,3,0,Math.PI*2);ctx.fill();
+      }
+    });
+    requestAnimationFrame(draw);
+  }
+  window.addEventListener('resize',()=>resize());
+  draw();
+})();
+
+// ── ⑥ Post-tension ──
+(function ptAnim(){
+  const cvs=document.getElementById('ptCanvas'); if(!cvs) return;
+  function resize(){cvs.width=cvs.offsetWidth;cvs.height=cvs.offsetHeight;}
+  resize();
+  const ctx=cvs.getContext('2d');
+  let t=0;
+  function draw(){
+    const W=cvs.width,H=cvs.height;
+    if(!W||!H){requestAnimationFrame(draw);return;}
+    t+=.01;
+    ctx.fillStyle='#0a0020';ctx.fillRect(0,0,W,H);
+    // beam outline
+    const bh=H*.25,by=(H-bh)/2;
+    ctx.fillStyle='rgba(80,60,100,.4)';ctx.fillRect(0,by,W,bh);
+    ctx.strokeStyle='rgba(140,120,180,.3)';ctx.lineWidth=1;ctx.strokeRect(0,by,W,bh);
+    // parabolic tendons
+    const nT=3;
+    for(let i=0;i<nT;i++){
+      const yOff=(i-1)*(bh*.25);
+      const jack=Math.max(0,(Math.sin(t*.6+i)+1)/2);
+      ctx.strokeStyle=`rgba(180,120,255,${0.3+jack*.5})`;ctx.lineWidth=1.5;
+      ctx.setLineDash([]);
+      ctx.beginPath();
+      for(let x=0;x<=W;x+=3){
+        const nx=x/W;
+        const y=by+bh*.5+yOff+Math.sin(nx*Math.PI)*bh*.3;
+        x===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+      }
+      ctx.stroke();
+      // travelling force arrow
+      const ax=((Math.sin(t*.4+i*1.2)+1)/2)*W;
+      const ay=by+bh*.5+yOff+Math.sin((ax/W)*Math.PI)*bh*.3;
+      ctx.fillStyle='rgba(180,120,255,.9)';
+      ctx.beginPath();ctx.ar
