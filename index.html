@@ -220,11 +220,10 @@ footer{font-size:.75rem;line-height:1.8;}
   </div>
   <div class="grid" id="concreteGrid">
 
-    <a class="card featured" href="cement-hydration/index.html">
+    <div class="card coming">
       <div class="card-vis vis-cement">
         <canvas class="mini-canvas" id="cCanvas"></canvas>
-        <span class="badge-live card-badge">● LIVE</span>
-        <span class="ribbon">New</span>
+        <span class="badge-soon card-badge">COMING SOON</span>
       </div>
       <div class="card-body">
         <div class="card-title">Cement Hydration Simulator</div>
@@ -236,9 +235,9 @@ footer{font-size:.75rem;line-height:1.8;}
           <span class="tag">5 cement types</span>
           <span class="tag">SCM blends</span>
         </div>
-        <span class="card-link link-primary link-arrow">Launch Simulator</span>
+        <span class="card-link link-ghost">In Development</span>
       </div>
-    </a>
+    </div>
 
     <div class="card coming">
       <div class="card-vis vis-mix">
@@ -307,6 +306,25 @@ footer{font-size:.75rem;line-height:1.8;}
     <div class="sec-count" id="aiCount"></div>
   </div>
   <div class="grid" id="aiGrid">
+
+    <a class="card featured" href="kmeans-clustering/index.html">
+      <div class="card-vis vis-ai">
+        <canvas class="mini-canvas" id="kmCanvas"></canvas>
+        <span class="badge-live card-badge">● LIVE</span>
+        <span class="ribbon">New</span>
+      </div>
+      <div class="card-body">
+        <div class="card-title">K-Means Clustering Explorer</div>
+        <div class="card-desc">Step through the K-Means algorithm on a real construction project dataset — cost overrun vs schedule delay. Watch centroids initialise, clusters assign, and the algorithm converge in five animated stages with play/pause control.</div>
+        <div class="card-tags">
+          <span class="tag">K-Means</span>
+          <span class="tag">Clustering</span>
+          <span class="tag">Unsupervised ML</span>
+          <span class="tag">Project risk</span>
+        </div>
+        <span class="card-link link-primary link-arrow">Launch Explorer</span>
+      </div>
+    </a>
 
     <div class="card coming">
       <div class="card-vis vis-ai">
@@ -712,6 +730,69 @@ document.getElementById('aiCount').textContent =
     ctx.fillStyle='#46C8F0';ctx.font='9px JetBrains Mono,monospace';
     const loss=(0.02+Math.max(0,Math.sin(t*.15)*.18)).toFixed(3);
     ctx.fillText(`loss = ${loss}`,12,H-8);
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+// ── K-MEANS MINI ──
+(function(){
+  const cvs=document.getElementById('kmCanvas'); if(!cvs)return;
+  function resize(){cvs.width=cvs.offsetWidth;cvs.height=cvs.offsetHeight;}
+  resize(); window.addEventListener('resize',resize);
+  const ctx=cvs.getContext('2d'); let t=0;
+  const clusterCols=['#3b82f6','#ef4444','#10b981'];
+  const raw=[
+    {x:12,y:8,c:0},{x:15,y:12,c:0},{x:18,y:6,c:0},{x:20,y:11,c:0},{x:22,y:14,c:0},
+    {x:25,y:9,c:0},{x:27,y:5,c:0},{x:30,y:13,c:0},{x:35,y:38,c:0},{x:38,y:30,c:0},
+    {x:55,y:55,c:1},{x:58,y:20,c:1},{x:60,y:50,c:1},{x:65,y:60,c:1},{x:67,y:57,c:1},
+    {x:72,y:65,c:1},{x:75,y:62,c:1},{x:80,y:70,c:1},{x:83,y:68,c:1},
+    {x:85,y:40,c:2},{x:88,y:30,c:2},{x:95,y:23,c:2},{x:97,y:25,c:2},{x:100,y:28,c:2},
+    {x:103,y:20,c:2},{x:109,y:16,c:2},{x:115,y:15,c:2},{x:118,y:22,c:2}
+  ];
+  const phase=[
+    {centroids:null,            col:false},
+    {centroids:[[30,80],[70,30],[60,80]], col:false},
+    {centroids:[[30,80],[70,30],[60,80]], col:true},
+    {centroids:[[22,25],[55,60],[80,30]], col:true},
+    {centroids:[[18,18],[58,72],[85,35]], col:true}
+  ];
+  let step=0, elapsed=0;
+  function draw(){
+    const W=cvs.width,H=cvs.height; if(!W||!H){requestAnimationFrame(draw);return;}
+    t+=.016; elapsed+=.016;
+    if(elapsed>2.8){elapsed=0; step=(step+1)%5;}
+    const p=phase[step];
+    ctx.fillStyle='#030810';ctx.fillRect(0,0,W,H);
+    // grid
+    ctx.strokeStyle='rgba(70,200,240,.04)';ctx.lineWidth=1;
+    for(let gx=0;gx<W;gx+=W/4){ctx.beginPath();ctx.moveTo(gx,0);ctx.lineTo(gx,H);ctx.stroke();}
+    for(let gy=0;gy<H;gy+=H/4){ctx.beginPath();ctx.moveTo(0,gy);ctx.lineTo(W,gy);ctx.stroke();}
+    // points
+    raw.forEach(pt=>{
+      const px=(pt.x/130)*W, py=H-(pt.y/80)*H;
+      ctx.fillStyle=p.col?clusterCols[pt.c]:'#888';
+      ctx.beginPath();ctx.arc(px,py,3,0,Math.PI*2);ctx.fill();
+    });
+    // centroids
+    if(p.centroids){
+      p.centroids.forEach((c,i)=>{
+        const cx=(c[0]/130)*W, cy=H-(c[1]/80)*H;
+        const pulse=(Math.sin(t*2+i)+1)/2;
+        ctx.fillStyle=clusterCols[i];
+        ctx.strokeStyle='#fff';ctx.lineWidth=1.5;
+        ctx.beginPath();
+        ctx.moveTo(cx,cy-6);ctx.lineTo(cx+2.5,cy-1.5);ctx.lineTo(cx+6,cy-1.5);
+        ctx.lineTo(cx+3.5,cy+1.5);ctx.lineTo(cx+4.5,cy+6);ctx.lineTo(cx,cy+3.5);
+        ctx.lineTo(cx-4.5,cy+6);ctx.lineTo(cx-3.5,cy+1.5);ctx.lineTo(cx-6,cy-1.5);
+        ctx.lineTo(cx-2.5,cy-1.5);ctx.closePath();
+        ctx.fill();ctx.stroke();
+      });
+    }
+    const labels=['Init','Centroids','Assign','Update','Converged'];
+    ctx.fillStyle='rgba(0,0,0,.5)';ctx.fillRect(8,H-22,76,16);
+    ctx.fillStyle='#46C8F0';ctx.font='9px JetBrains Mono,monospace';
+    ctx.fillText(labels[step],12,H-8);
     requestAnimationFrame(draw);
   }
   draw();
