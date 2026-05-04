@@ -19,9 +19,7 @@ import os
 import re
 from typing import Optional, Union
 
-from dotenv import load_dotenv
 
-load_dotenv()
 
 
 def _get_client():
