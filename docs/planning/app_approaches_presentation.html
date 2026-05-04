@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Construction Planning Agent — App Architecture Options</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0f1117;--surface:#1a1d27;--card:#222639;--border:#2e3347;--accent:#6366f1;--accent2:#8b5cf6;--green:#22c55e;--amber:#f59e0b;--red:#ef4444;--cyan:#06b6d4;--text:#e2e8f0;--muted:#94a3b8;--dim:#64748b}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden}
+.slide{min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:60px 80px;position:relative}
+.slide::after{content:'';position:absolute;top:0;right:0;width:400px;height:400px;background:radial-gradient(circle,rgba(99,102,241,.08),transparent 70%);pointer-events:none}
+.badge{display:inline-block;padding:6px 16px;border-radius:20px;font-size:12px;font-weight:600;letter-spacing:1px;text-transform:uppercase;margin-bottom:20px}
+.badge-purple{background:rgba(139,92,246,.15);color:#a78bfa;border:1px solid rgba(139,92,246,.3)}
+.badge-green{background:rgba(34,197,94,.15);color:#4ade80;border:1px solid rgba(34,197,94,.3)}
+.badge-amber{background:rgba(245,158,11,.15);color:#fbbf24;border:1px solid rgba(245,158,11,.3)}
+.badge-cyan{background:rgba(6,182,212,.15);color:#22d3ee;border:1px solid rgba(6,182,212,.3)}
+.badge-red{background:rgba(239,68,68,.15);color:#f87171;border:1px solid rgba(239,68,68,.3)}
+h1{font-size:48px;font-weight:800;line-height:1.1;margin-bottom:16px;background:linear-gradient(135deg,#e2e8f0,#6366f1);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+h2{font-size:36px;font-weight:700;margin-bottom:12px}
+h3{font-size:20px;font-weight:600;margin-bottom:8px}
+.subtitle{font-size:20px;color:var(--muted);line-height:1.6;max-width:700px;margin-bottom:40px}
+.divider{width:60px;height:3px;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:2px;margin:24px 0}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:32px}
+.grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:24px;margin-top:32px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px;transition:transform .2s,border-color .2s}
+.card:hover{transform:translateY(-4px);border-color:var(--accent)}
+.card-header{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.card-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px}
+.card-icon.purple{background:rgba(99,102,241,.15)}
+.card-icon.green{background:rgba(34,197,94,.15)}
+.card-icon.amber{background:rgba(245,158,11,.15)}
+.card-icon.cyan{background:rgba(6,182,212,.15)}
+.card p,.card li{color:var(--muted);font-size:14px;line-height:1.7}
+.card ul{list-style:none;padding:0}
+.card li{padding:4px 0;padding-left:20px;position:relative}
+.card li::before{content:'→';position:absolute;left:0;color:var(--accent)}
+.tag{display:inline-block;padding:3px 10px;border-radius:6px;font-size:11px;font-weight:600;margin:2px}
+.tag-pro{background:rgba(34,197,94,.12);color:#4ade80}
+.tag-con{background:rgba(239,68,68,.12);color:#f87171}
+.verdict-box{margin-top:20px;padding:16px;border-radius:12px;border-left:3px solid var(--accent);background:rgba(99,102,241,.06)}
+.verdict-box p{color:var(--text);font-size:14px;font-weight:500}
+.recommended{border:2px solid var(--green);box-shadow:0 0 30px rgba(34,197,94,.1)}
+.recommended .card-header::after{content:'★ RECOMMENDED';font-size:10px;font-weight:700;color:var(--green);background:rgba(34,197,94,.12);padding:4px 10px;border-radius:6px;margin-left:auto}
+.flow{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:20px 0}
+.flow-step{background:var(--card);border:1px solid var(--border);padding:10px 18px;border-radius:10px;font-size:13px;font-weight:500}
+.flow-arrow{color:var(--accent);font-size:18px}
+.timeline{position:relative;padding-left:40px;margin-top:24px}
+.timeline::before{content:'';position:absolute;left:15px;top:0;bottom:0;width:2px;background:linear-gradient(180deg,var(--accent),var(--accent2))}
+.timeline-item{position:relative;margin-bottom:24px}
+.timeline-item::before{content:'';position:absolute;left:-32px;top:6px;width:14px;height:14px;border-radius:50%;background:var(--accent);border:3px solid var(--bg)}
+.timeline-item h3{font-size:16px;margin-bottom:4px}
+.timeline-item p{font-size:13px;color:var(--muted);line-height:1.6}
+.comparison-table{width:100%;border-collapse:collapse;margin-top:24px}
+.comparison-table th,.comparison-table td{padding:14px 18px;text-align:left;border-bottom:1px solid var(--border);font-size:14px}
+.comparison-table th{color:var(--muted);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:1px}
+.comparison-table td:first-child{font-weight:500;color:var(--text)}
+.score{display:inline-block;width:28px;height:28px;border-radius:8px;text-align:center;line-height:28px;font-size:12px;font-weight:700}
+.score-high{background:rgba(34,197,94,.15);color:#4ade80}
+.score-mid{background:rgba(245,158,11,.15);color:#fbbf24}
+.score-low{background:rgba(239,68,68,.15);color:#f87171}
+.nav{position:fixed;right:30px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:8px;z-index:100}
+.nav a{width:10px;height:10px;border-radius:50%;background:var(--dim);display:block;transition:all .2s}
+.nav a:hover,.nav a.active{background:var(--accent);transform:scale(1.4)}
+.slide-num{position:absolute;bottom:30px;right:40px;font-size:13px;color:var(--dim);font-weight:500}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+<a href="#slide1"></a><a href="#slide2"></a><a href="#slide3"></a><a href="#slide4"></a><a href="#slide5"></a><a href="#slide6"></a><a href="#slide7"></a>
+</nav>
+
+<!-- SLIDE 1: Title -->
+<section class="slide" id="slide1">
+<span class="badge badge-purple">Architecture Analysis · May 2026</span>
+<h1>Construction Planning Agent</h1>
+<p class="subtitle">Three approaches to turn a 919-line design specification into a working application — evaluated against the plan's requirements for conversational PIR, human-in-the-loop gates, library-grounded durations, calendar-aware CPM, and professional Excel output.</p>
+<div class="flow">
+<div class="flow-step">📝 Brief</div><span class="flow-arrow">→</span>
+<div class="flow-step">💬 PIR</div><span class="flow-arrow">→</span>
+<div class="flow-step">✅ Approval</div><span class="flow-arrow">→</span>
+<div class="flow-step">📊 WBS + CPM</div><span class="flow-arrow">→</span>
+<div class="flow-step">📑 Excel Package</div>
+</div>
+<span class="slide-num">1 / 7</span>
+</section>
+
+<!-- SLIDE 2: What drives the architecture -->
+<section class="slide" id="slide2">
+<span class="badge badge-cyan">Requirements</span>
+<h2>What Drives the Architecture</h2>
+<div class="divider"></div>
+<div class="grid-3">
+<div class="card">
+<div class="card-header"><div class="card-icon purple">💬</div><h3>Conversational PIR</h3></div>
+<p>Progressive, multi-turn elicitation — not a 15-question form. Structured inputs (dropdowns, radio, numeric). "Why this default?" explanations. Unknown-handling with conservative/high-risk options.</p>
+</div>
+<div class="card">
+<div class="card-header"><div class="card-icon green">🛑</div><h3>Human-in-the-Loop</h3></div>
+<p>Two mandatory approval gates: Planning Basis approval (before WBS) and Draft Schedule review (before CPM). Edit logging with timestamps, author, field, and reason.</p>
+</div>
+<div class="card">
+<div class="card-header"><div class="card-icon amber">📚</div><h3>Library-Grounded</h3></div>
+<p>Production rates, lead times, and logic rules are NEVER invented by the LLM. Static CSV/JSON files, version-controlled. "Not in library → planner input required."</p>
+</div>
+<div class="card">
+<div class="card-header"><div class="card-icon cyan">📅</div><h3>Calendar-Aware CPM</h3></div>
+<p>Working calendars (5/5.5/6-day), VIC public holidays, RDO rosters, Christmas shutdown, weather days. Forward/backward pass with float calculation.</p>
+</div>
+<div class="card">
+<div class="card-header"><div class="card-icon purple">✅</div><h3>Validation Engine</h3></div>
+<p>Construction-logic rules, DCMA-style schedule quality, procurement integrity, weather/seasonal, crew continuity. Error/Warning/Info severity model.</p>
+</div>
+<div class="card">
+<div class="card-header"><div class="card-icon green">📊</div><h3>Excel Output</h3></div>
+<p>8-tab professional workbook: Executive Summary, PIR, Basis of Schedule, WBS, Full Schedule, Procurement, Risk Register, Validation + Sign-Off.</p>
+</div>
+</div>
+<span class="slide-num">2 / 7</span>
+</section>
+
+<!-- SLIDE 3: Option A — n8n -->
+<section class="slide" id="slide3">
+<span class="badge badge-amber">Option A</span>
+<h2>n8n + Web Frontend</h2>
+<div class="divider"></div>
+<p class="subtitle">Low-code workflow orchestration with a simple HTML form. Matches the plan's §21.2 recommendation.</p>
+<div class="grid-2">
+<div class="card">
+<h3 style="color:#4ade80;margin-bottom:12px">Strengths</h3>
+<ul>
+<li>Visual workflow editor — fast to prototype</li>
+<li>Directly matches §21.2 of the plan</li>
+<li>Self-hosted or cloud deployment</li>
+<li>Non-developers can understand the flow</li>
+</ul>
+</div>
+<div class="card">
+<h3 style="color:#f87171;margin-bottom:12px">Weaknesses</h3>
+<ul>
+<li>n8n is JS-native — complex Python logic (CPM, Pydantic, openpyxl) needs an external service anyway</li>
+<li>Multi-turn conversational PIR is awkward in linear workflow model</li>
+<li>Human approval gates are basic (email wait nodes)</li>
+<li>State management for conversations is limited</li>
+</ul>
+</div>
+</div>
+<div class="verdict-box">
+<p>💡 Good for a quick proof-of-concept, but the conversational PIR and rich approval UX will outgrow n8n. You'd end up building a custom frontend anyway.</p>
+</div>
+<span class="slide-num">3 / 7</span>
+</section>
+
+<!-- SLIDE 4: Option B — Python Full-Stack -->
+<section class="slide" id="slide4">
+<span class="badge badge-green">Option B</span>
+<h2>FastAPI + Streamlit (Full-Stack Python)</h2>
+<div class="divider"></div>
+<p class="subtitle">Monolithic Python app. All recommended libraries run natively. Chat interface for PIR.</p>
+<div class="grid-2">
+<div class="card recommended">
+<h3 style="color:#4ade80;margin-bottom:12px">Strengths</h3>
+<ul>
+<li>ALL recommended libraries run natively (Pydantic, pandas, NetworkX, openpyxl)</li>
+<li>Streamlit chat interface = natural conversational PIR</li>
+<li>Single language, single deployment</li>
+<li>Fastest path to working Phase 1a</li>
+<li>Easy deploy: Docker → Fly.io / Railway</li>
+<li>Ideal for Phase 1c calibration with planners</li>
+</ul>
+</div>
+<div class="card">
+<h3 style="color:#f87171;margin-bottom:12px">Weaknesses</h3>
+<ul>
+<li>Streamlit UI is functional but not premium</li>
+<li>Session-state model can be tricky for multi-step flows</li>
+<li>Scaling beyond single user requires more infrastructure</li>
+<li>May need frontend rebuild for public-facing product</li>
+</ul>
+</div>
+</div>
+<div class="verdict-box">
+<p>⭐ Best fit for Phase 1a–1c. Gets a working tool in planners' hands fastest. Core engine stays framework-agnostic for future migration.</p>
+</div>
+<span class="slide-num">4 / 7</span>
+</section>
+
+<!-- SLIDE 5: Option C — Next.js + Microservices -->
+<section class="slide" id="slide5">
+<span class="badge badge-cyan">Option C</span>
+<h2>Next.js + Python Microservices</h2>
+<div class="divider"></div>
+<p class="subtitle">Production-grade decoupled architecture. Polished React frontend, Python computation backend.</p>
+<div class="grid-2">
+<div class="card">
+<h3 style="color:#4ade80;margin-bottom:12px">Strengths</h3>
+<ul>
+<li>Premium, fully customizable UI</li>
+<li>Best for multi-user, team workflows</li>
+<li>Clean separation: LLM vs computation vs presentation</li>
+<li>Scales to a commercial product</li>
+<li>Real-time updates via WebSockets</li>
+</ul>
+</div>
+<div class="card">
+<h3 style="color:#f87171;margin-bottom:12px">Weaknesses</h3>
+<ul>
+<li>2–3× the development timeline</li>
+<li>Requires JS + Python expertise</li>
+<li>Over-engineered for Phase 1 validation</li>
+<li>Two language runtimes to deploy and maintain</li>
+</ul>
+</div>
+</div>
+<div class="verdict-box">
+<p>🚀 The right architecture for Phase 2+ after calibration confirms product-market fit. Premature for Phase 1.</p>
+</div>
+<span class="slide-num">5 / 7</span>
+</section>
+
+<!-- SLIDE 6: Comparison -->
+<section class="slide" id="slide6">
+<span class="badge badge-purple">Comparison</span>
+<h2>Head-to-Head Evaluation</h2>
+<div class="divider"></div>
+<table class="comparison-table">
+<thead>
+<tr><th>Criterion</th><th>A: n8n</th><th>B: Streamlit ★</th><th>C: Next.js</th></tr>
+</thead>
+<tbody>
+<tr><td>Conversational PIR</td><td><span class="score score-low">3</span></td><td><span class="score score-high">8</span></td><td><span class="score score-high">9</span></td></tr>
+<tr><td>Python library support</td><td><span class="score score-low">3</span></td><td><span class="score score-high">10</span></td><td><span class="score score-high">10</span></td></tr>
+<tr><td>Time to Phase 1a</td><td><span class="score score-mid">6</span></td><td><span class="score score-high">9</span></td><td><span class="score score-low">4</span></td></tr>
+<tr><td>UI polish</td><td><span class="score score-low">3</span></td><td><span class="score score-mid">6</span></td><td><span class="score score-high">10</span></td></tr>
+<tr><td>Multi-user scaling</td><td><span class="score score-mid">5</span></td><td><span class="score score-low">4</span></td><td><span class="score score-high">9</span></td></tr>
+<tr><td>Human-in-the-loop UX</td><td><span class="score score-low">3</span></td><td><span class="score score-mid">7</span></td><td><span class="score score-high">9</span></td></tr>
+<tr><td>Deployment simplicity</td><td><span class="score score-mid">7</span></td><td><span class="score score-high">9</span></td><td><span class="score score-mid">5</span></td></tr>
+<tr><td>Migration flexibility</td><td><span class="score score-low">4</span></td><td><span class="score score-high">8</span></td><td><span class="score score-high">10</span></td></tr>
+</tbody>
+</table>
+<span class="slide-num">6 / 7</span>
+</section>
+
+<!-- SLIDE 7: Recommendation + Timeline -->
+<section class="slide" id="slide7">
+<span class="badge badge-green">Recommendation</span>
+<h2>Start B → Migrate to C</h2>
+<div class="divider"></div>
+<p class="subtitle">Build Phase 1 with Streamlit to validate the planning logic. Migrate to Next.js after calibration proves the tool's value.</p>
+<div class="timeline">
+<div class="timeline-item"><h3>Weeks 1–2: Foundation</h3><p>Pydantic schemas, static CSV/JSON libraries, calendar engine (VIC_5DAY_STANDARD_2026), LLM service layer, Streamlit PIR page</p></div>
+<div class="timeline-item"><h3>Weeks 3–4: Core Logic</h3><p>WBS + activity generation, procurement chains, Planning Basis approval gate, validation engine (10–12 rules), draft schedule review page</p></div>
+<div class="timeline-item"><h3>Weeks 5–6: CPM + Output</h3><p>Calendar-aware CPM engine, three-point durations → P50/P80, 8-tab Excel workbook, Basis of Schedule narrative, Planner Sign-Off</p></div>
+<div class="timeline-item"><h3>Weeks 7–10: Polish</h3><p>Float calculation, critical path narrative, expanded DCMA-style validation, Lock-on-Baseline, risk register with activity linkage</p></div>
+<div class="timeline-item"><h3>Weeks 11–14: Calibrate</h3><p>Run against 5–8 historical projects. Measure edit rate, duration accuracy, planner satisfaction. Iterate libraries and rules.</p></div>
+<div class="timeline-item"><h3>Post-calibration: Migrate</h3><p>If validated → extract core/ to FastAPI, build Next.js frontend, add PostgreSQL, authentication, team access.</p></div>
+</div>
+<span class="slide-num">7 / 7</span>
+</section>
+
+<script>
+const slides=document.querySelectorAll('.slide');
+const dots=document.querySelectorAll('.nav a');
+const observer=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      const idx=[...slides].indexOf(e.target);
+      dots.forEach((d,i)=>d.classList.toggle('active',i===idx));
+    }
+  });
+},{threshold:0.5});
+slides.forEach(s=>observer.observe(s));
+</script>
+</body>
+</html>

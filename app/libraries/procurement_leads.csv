@@ -1,0 +1,21 @@
+ItemCategory,TypicalWeeksMin,TypicalWeeksMax,RequiredPrecedents,Source,LastUpdated,Notes
+structural_steel_light,6,10,Design freeze; shop drawings; engineer approval,Public estimate,2026-01,Light structural steel beams and columns
+structural_steel_heavy,10,16,Design freeze; shop drawings; engineer approval; FAT,Public estimate,2026-01,Heavy structural steel frames
+aluminium_windows_standard,4,8,Design freeze; shop drawings; colour selection,Public estimate,2026-01,Standard residential aluminium windows
+aluminium_windows_custom,8,14,Design freeze; shop drawings; colour selection; sample approval,Public estimate,2026-01,Custom sizes or configurations
+timber_windows,8,12,Design freeze; shop drawings; timber selection,Public estimate,2026-01,Hardwood or engineered timber
+glazing_curtain_wall,12,20,Design freeze; shop drawings; engineer approval; sample; FAT,Public estimate,2026-01,Commercial curtain wall systems
+kitchen_joinery,6,10,Design freeze; shop drawings; client approval; colour selection,Public estimate,2026-01,Custom kitchen cabinetry
+bathroom_vanities,4,8,Design freeze; shop drawings; client approval,Public estimate,2026-01,Custom vanity units
+switchboard_residential,3,6,Design freeze; electrical design; approval,Public estimate,2026-01,Standard residential switchboard
+switchboard_commercial,6,12,Design freeze; electrical design; engineer approval,Public estimate,2026-01,Commercial switchboard 200A+
+lift_passenger,16,24,Design freeze; shop drawings; engineer approval; FAT; shaft ready,Public estimate,2026-01,Standard passenger lift
+hvac_plant_residential,3,6,Design freeze; equipment selection,Public estimate,2026-01,Split system or ducted residential
+hvac_plant_commercial,8,14,Design freeze; mechanical design; engineer approval,Public estimate,2026-01,Package unit or chiller system
+fire_system_sprinkler,6,12,Design freeze; fire engineering; authority approval,Public estimate,2026-01,Sprinkler system components
+precast_concrete,8,14,Design freeze; shop drawings; engineer approval; mould fabrication,Public estimate,2026-01,Precast panels or beams
+roof_trusses,3,6,Design freeze; truss design; engineer certification,Public estimate,2026-01,Pre-fabricated timber roof trusses
+garage_door,3,6,Design freeze; size confirmation,Public estimate,2026-01,Standard sectional garage door
+stone_benchtops,4,8,Design freeze; template; colour selection,Public estimate,2026-01,Natural or engineered stone
+facade_cladding,8,14,Design freeze; shop drawings; sample approval; colour selection,Public estimate,2026-01,Aluminium composite or similar
+electrical_distribution,4,8,Design freeze; electrical design; approval,Public estimate,2026-01,Distribution boards and sub-mains

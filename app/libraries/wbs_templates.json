@@ -1,0 +1,110 @@
+{
+    "detached_house": {
+        "name": "Detached House",
+        "levels": [
+            {
+                "wbs_code": "0",
+                "name": "Pre-Construction",
+                "level": 1,
+                "children": [
+                    {"wbs_code": "0.1", "name": "Design and Documentation", "level": 2},
+                    {"wbs_code": "0.2", "name": "Authorities and Approvals", "level": 2},
+                    {"wbs_code": "0.3", "name": "Procurement", "level": 2}
+                ]
+            },
+            {
+                "wbs_code": "1",
+                "name": "Site Works and Earthworks",
+                "level": 1,
+                "children": [
+                    {"wbs_code": "1.1", "name": "Site Establishment", "level": 2},
+                    {"wbs_code": "1.2", "name": "Demolition (if applicable)", "level": 2},
+                    {"wbs_code": "1.3", "name": "Earthworks and Excavation", "level": 2},
+                    {"wbs_code": "1.4", "name": "Retaining Walls (if applicable)", "level": 2}
+                ]
+            },
+            {
+                "wbs_code": "2",
+                "name": "Substructure",
+                "level": 1,
+                "children": [
+                    {"wbs_code": "2.1", "name": "Footings", "level": 2},
+                    {"wbs_code": "2.2", "name": "Ground Floor Slab", "level": 2},
+                    {"wbs_code": "2.3", "name": "Under-slab Services", "level": 2}
+                ]
+            },
+            {
+                "wbs_code": "3",
+                "name": "Superstructure",
+                "level": 1,
+                "children": [
+                    {"wbs_code": "3.1", "name": "Wall Framing — Ground Floor", "level": 2},
+                    {"wbs_code": "3.2", "name": "First Floor Structure", "level": 2},
+                    {"wbs_code": "3.3", "name": "Wall Framing — First Floor", "level": 2},
+                    {"wbs_code": "3.4", "name": "Roof Structure", "level": 2}
+                ]
+            },
+            {
+                "wbs_code": "4",
+                "name": "Envelope and Façade",
+                "level": 1,
+                "children": [
+                    {"wbs_code": "4.1", "name": "Roofing", "level": 2},
+                    {"wbs_code": "4.2", "name": "External Cladding", "level": 2},
+                    {"wbs_code": "4.3", "name": "Windows and Glazing", "level": 2},
+                    {"wbs_code": "4.4", "name": "External Doors", "level": 2}
+                ]
+            },
+            {
+                "wbs_code": "5",
+                "name": "Services Rough-in",
+                "level": 1,
+                "children": [
+                    {"wbs_code": "5.1", "name": "Electrical Rough-in", "level": 2},
+                    {"wbs_code": "5.2", "name": "Plumbing Rough-in", "level": 2},
+                    {"wbs_code": "5.3", "name": "HVAC Rough-in", "level": 2},
+                    {"wbs_code": "5.4", "name": "Communications and Data", "level": 2}
+                ]
+            },
+            {
+                "wbs_code": "6",
+                "name": "Internal Works and Finishes",
+                "level": 1,
+                "children": [
+                    {"wbs_code": "6.1", "name": "Insulation", "level": 2},
+                    {"wbs_code": "6.2", "name": "Plasterboard and Linings", "level": 2},
+                    {"wbs_code": "6.3", "name": "Wet Area Waterproofing", "level": 2},
+                    {"wbs_code": "6.4", "name": "Tiling", "level": 2},
+                    {"wbs_code": "6.5", "name": "Joinery and Cabinetry", "level": 2},
+                    {"wbs_code": "6.6", "name": "Internal Doors and Hardware", "level": 2},
+                    {"wbs_code": "6.7", "name": "Floor Finishes", "level": 2},
+                    {"wbs_code": "6.8", "name": "Painting", "level": 2},
+                    {"wbs_code": "6.9", "name": "Fixtures and Fittings", "level": 2}
+                ]
+            },
+            {
+                "wbs_code": "7",
+                "name": "External Works and Landscaping",
+                "level": 1,
+                "children": [
+                    {"wbs_code": "7.1", "name": "Driveway and Paths", "level": 2},
+                    {"wbs_code": "7.2", "name": "Fencing", "level": 2},
+                    {"wbs_code": "7.3", "name": "Landscaping", "level": 2},
+                    {"wbs_code": "7.4", "name": "External Services", "level": 2}
+                ]
+            },
+            {
+                "wbs_code": "8",
+                "name": "Commissioning and Handover",
+                "level": 1,
+                "children": [
+                    {"wbs_code": "8.1", "name": "Services Commissioning", "level": 2},
+                    {"wbs_code": "8.2", "name": "Final Inspections", "level": 2},
+                    {"wbs_code": "8.3", "name": "Practical Completion", "level": 2},
+                    {"wbs_code": "8.4", "name": "Handover", "level": 2},
+                    {"wbs_code": "8.5", "name": "Defects Period", "level": 2}
+                ]
+            }
+        ]
+    }
+}

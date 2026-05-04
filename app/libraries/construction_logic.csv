@@ -1,0 +1,20 @@
+RuleID,Description,AppliesToProjectTypes,Severity,SuggestedFix,Source
+SEQ-001,Substructure must precede superstructure,all,Error,Add FS dependency from substructure to superstructure activities,Construction sequencing fundamental
+SEQ-002,Slab cure lag ≥7 days before frame loading,all,Error,"Add FS+7d lag from slab pour to frame erection",AS 3600 Concrete structures
+SEQ-003,Frame inspection before internal linings,all,Error,Add frame inspection milestone before plasterboard activities,NCC / Building surveyor requirement
+SEQ-004,Roof and envelope before moisture-sensitive finishes,all,Warning,Ensure weathertightness before internal finishes commence,Construction best practice
+SEQ-005,Services rough-in before plasterboard,all,Error,Add FS dependency from services rough-in to plasterboard,Standard trade sequence
+SEQ-006,Waterproofing inspection before tiling in wet areas,all,Error,Add waterproofing inspection milestone before tiling,AS 3740 Waterproofing
+SEQ-007,Final electrical certification before occupancy,all,Error,Add electrical certification milestone before handover,AS 3000 Electrical installations
+SEQ-008,Practical Completion inspection before handover,all,Error,Add PC inspection milestone before handover/defects,AS 4000 General conditions
+SEQ-009,Render cure ≥3 days before external painting,all,Warning,Add FS+3d lag from render to external paint,Manufacturer specifications
+SEQ-010,Stormwater and drainage before final landscaping,all,Warning,Ensure underground services complete before landscape works,Construction sequencing
+SEQ-011,Window installation before internal plastering,all,Warning,Install windows to achieve weathertightness before wet trades,Construction best practice
+SEQ-012,Foundation inspection before concrete pour,all,Error,Add foundation inspection milestone before footing concrete,NCC / Building surveyor requirement
+PROC-001,Long-lead installation without procurement chain,all,Error,Link installation activity to procurement chain,Procurement integrity rule
+PROC-002,Consultant review duration < 5 working days,all,Warning,Allow minimum 5 working days for consultant review,Industry practice
+QUAL-001,Activity without predecessor (open start),all,Warning,Add predecessor or mark as project start milestone,DCMA 14-Point Assessment
+QUAL-002,Activity without successor (open finish),all,Warning,Add successor or mark as project finish milestone,DCMA 14-Point Assessment
+QUAL-003,Activity duration exceeds 25 working days,all,Warning,Break down into sub-activities or flag as hammock,DCMA 14-Point Assessment
+QUAL-004,Excessive positive float > 50 days,all,Info,Review logic — may indicate missing dependencies,DCMA 14-Point Assessment
+WEATHER-001,External works in Melbourne winter without ≥15% weather buffer,detached_house;townhouse;medium_density;small_commercial,Warning,Add weather contingency to external activities Jun-Aug,Melbourne climate data

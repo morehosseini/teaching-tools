@@ -1,0 +1,80 @@
+{
+    "detached_house": {
+        "name": "Detached House — Standard Melbourne",
+        "description": "Two-storey detached house, timber frame, hipped roof, 200-300m² GFA",
+        "default_gfa_m2": 250,
+        "default_storeys": 2,
+        "default_structural_system": "Timber frame",
+        "quantity_ratios_per_m2_gfa": {
+            "concrete_slab_on_ground": {"ratio": 0.72, "unit": "m2"},
+            "timber_wall_framing": {"ratio": 2.1, "unit": "m2"},
+            "timber_roof_framing": {"ratio": 0.85, "unit": "m2"},
+            "roofing_tiles": {"ratio": 0.85, "unit": "m2"},
+            "brickwork": {"ratio": 0.6, "unit": "m2"},
+            "plasterboard_install": {"ratio": 3.2, "unit": "m2"},
+            "internal_painting": {"ratio": 3.5, "unit": "m2"},
+            "electrical_rough_in": {"ratio": 0.3, "unit": "point"},
+            "plumbing_rough_in": {"ratio": 0.1, "unit": "point"},
+            "insulation_batts": {"ratio": 2.5, "unit": "m2"},
+            "tiling_floor": {"ratio": 0.15, "unit": "m2"},
+            "tiling_wall": {"ratio": 0.12, "unit": "m2"},
+            "carpet_laying": {"ratio": 0.5, "unit": "m2"},
+            "timber_flooring": {"ratio": 0.3, "unit": "m2"},
+            "concrete_driveway": {"ratio": 0.15, "unit": "m2"}
+        }
+    },
+    "townhouse": {
+        "name": "Townhouse — Melbourne Infill",
+        "description": "Three-storey townhouse, 150-200m² GFA per unit",
+        "default_gfa_m2": 180,
+        "default_storeys": 3,
+        "default_structural_system": "Timber frame",
+        "quantity_ratios_per_m2_gfa": {
+            "concrete_slab_on_ground": {"ratio": 0.55, "unit": "m2"},
+            "concrete_suspended_slab": {"ratio": 0.45, "unit": "m2"},
+            "timber_wall_framing": {"ratio": 2.3, "unit": "m2"},
+            "timber_roof_framing": {"ratio": 0.45, "unit": "m2"},
+            "roofing_metal": {"ratio": 0.45, "unit": "m2"},
+            "cladding_render": {"ratio": 1.2, "unit": "m2"},
+            "plasterboard_install": {"ratio": 3.5, "unit": "m2"},
+            "internal_painting": {"ratio": 3.8, "unit": "m2"},
+            "electrical_rough_in": {"ratio": 0.35, "unit": "point"},
+            "plumbing_rough_in": {"ratio": 0.12, "unit": "point"}
+        }
+    },
+    "small_commercial": {
+        "name": "Small Commercial — Melbourne",
+        "description": "Single or two-storey commercial, steel/concrete frame, 500-2000m² GFA",
+        "default_gfa_m2": 800,
+        "default_storeys": 2,
+        "default_structural_system": "Steel frame",
+        "quantity_ratios_per_m2_gfa": {
+            "concrete_slab_on_ground": {"ratio": 0.6, "unit": "m2"},
+            "steel_frame_erection": {"ratio": 0.03, "unit": "tonne"},
+            "roofing_metal": {"ratio": 0.55, "unit": "m2"},
+            "cladding_render": {"ratio": 0.8, "unit": "m2"},
+            "plasterboard_install": {"ratio": 2.5, "unit": "m2"},
+            "internal_painting": {"ratio": 3.0, "unit": "m2"},
+            "electrical_rough_in": {"ratio": 0.4, "unit": "point"},
+            "plumbing_rough_in": {"ratio": 0.08, "unit": "point"},
+            "tiling_floor": {"ratio": 0.3, "unit": "m2"},
+            "carpet_laying": {"ratio": 0.5, "unit": "m2"}
+        }
+    },
+    "warehouse": {
+        "name": "Warehouse — Melbourne Industrial",
+        "description": "Single-storey warehouse with office, steel portal frame, 1000-5000m² GFA",
+        "default_gfa_m2": 2000,
+        "default_storeys": 1,
+        "default_structural_system": "Steel portal frame",
+        "quantity_ratios_per_m2_gfa": {
+            "concrete_slab_on_ground": {"ratio": 0.95, "unit": "m2"},
+            "steel_frame_erection": {"ratio": 0.025, "unit": "tonne"},
+            "roofing_metal": {"ratio": 1.0, "unit": "m2"},
+            "cladding_weatherboard": {"ratio": 0.3, "unit": "m2"},
+            "plasterboard_install": {"ratio": 0.3, "unit": "m2"},
+            "electrical_rough_in": {"ratio": 0.1, "unit": "point"},
+            "concrete_paths": {"ratio": 0.15, "unit": "m2"}
+        }
+    }
+}

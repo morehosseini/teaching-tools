@@ -1,0 +1,42 @@
+ActivityType,Unit,TypicalRate,LowRate,HighRate,CrewComposition,Source,LastUpdated,Notes
+site_establishment,item,1,1,1,"Site manager + 2 labourers",Public estimate,2026-01,Includes temp fencing site shed amenities
+demolition_residential,m2,25,15,40,"Demolition crew; 4 workers; excavator",Public estimate,2026-01,Light timber/brick residential
+bulk_excavation,m3,80,50,120,"1 excavator + 1 truck + 1 labourer",Public estimate,2026-01,Open site good access
+trench_excavation,lm,15,10,25,"1 mini excavator + 2 labourers",Public estimate,2026-01,Strip footings standard depth
+rock_breaking,m3,8,4,15,"1 rock breaker + 1 excavator + 2 labourers",Public estimate,2026-01,Depends on rock hardness
+concrete_footings,m3,15,10,25,"1 concrete crew; 4 workers; concrete pump",Public estimate,2026-01,Strip and pad footings
+concrete_slab_on_ground,m2,40,30,55,"1 concrete crew; 4 workers; concrete pump",Public estimate,2026-01,Standard 100mm residential slab
+concrete_suspended_slab,m2,20,12,30,"1 concrete crew; 6 workers; formwork + pump",Public estimate,2026-01,Includes formwork and pour
+concrete_driveway,m2,30,20,45,"1 concrete crew; 3 workers",Public estimate,2026-01,Plain finish residential
+steel_frame_erection,tonne,1.5,0.8,2.5,"Steel erection crew; 4 workers; crane",Public estimate,2026-01,Light structural steel
+timber_wall_framing,m2,12,8,18,"2 carpenters",Public estimate,2026-01,Standard timber wall framing AS 1684
+timber_roof_framing,m2,8,5,12,"2 carpenters + crane for trusses",Public estimate,2026-01,Pre-fabricated trusses
+brickwork,m2,10,6,15,"2 bricklayers + 1 labourer",Public estimate,2026-01,Standard single-skin brick
+blockwork,m2,8,5,12,"2 blocklayers + 1 labourer",Public estimate,2026-01,Standard concrete block
+roofing_tiles,m2,25,15,35,"2 roofers + 1 labourer",Public estimate,2026-01,Concrete or terracotta tiles
+roofing_metal,m2,35,25,50,"2 roofers",Public estimate,2026-01,Colorbond long-run sheeting
+cladding_weatherboard,m2,8,5,12,"2 carpenters",Public estimate,2026-01,Timber or fibre cement weatherboard
+cladding_render,m2,6,4,10,"2 renderers + 1 labourer",Public estimate,2026-01,Acrylic render system
+window_installation,no,4,2,6,"2 glaziers",Public estimate,2026-01,Standard residential windows
+electrical_rough_in,point,12,8,18,"1 electrician + 1 apprentice",Public estimate,2026-01,Per power/light/data point
+plumbing_rough_in,point,6,4,10,"1 plumber + 1 apprentice",Public estimate,2026-01,Per fixture connection point
+hvac_rough_in,m2,15,10,25,"2 HVAC technicians",Public estimate,2026-01,Ducted split system residential
+insulation_batts,m2,80,50,120,"2 labourers",Public estimate,2026-01,Wall and ceiling batts R2.5+
+plasterboard_install,m2,25,15,35,"2 plasterers",Public estimate,2026-01,Standard 10mm or 13mm sheets
+plasterboard_stopping,m2,40,25,60,"1 plasterer",Public estimate,2026-01,Three-coat stopping and sanding
+internal_painting,m2,20,12,30,"2 painters",Public estimate,2026-01,Two coats over sealed plasterboard
+external_painting,m2,15,10,25,"2 painters",Public estimate,2026-01,Preparation and two coats
+tiling_floor,m2,8,5,12,"1 tiler + 1 labourer",Public estimate,2026-01,Standard 300x300 or 600x600
+tiling_wall,m2,6,4,10,"1 tiler + 1 labourer",Public estimate,2026-01,Wet area wall tiles
+waterproofing,m2,20,12,30,"1 waterproofer",Public estimate,2026-01,Membrane application wet areas
+timber_flooring,m2,12,8,18,"2 floor layers",Public estimate,2026-01,Engineered timber overlay
+carpet_laying,m2,30,20,45,"2 carpet layers",Public estimate,2026-01,Including underlay
+kitchen_install,item,0.5,0.3,0.8,"2 joiners + 1 plumber + 1 electrician",Public estimate,2026-01,Rate is kitchens per day
+bathroom_fitout,item,0.3,0.2,0.5,"1 plumber + 1 tiler + 1 joiner",Public estimate,2026-01,Rate is bathrooms per day
+door_hanging,no,6,4,10,"1 carpenter",Public estimate,2026-01,Internal doors with hardware
+skirting_architrave,lm,30,20,45,"1 carpenter",Public estimate,2026-01,Standard MDF profiles
+landscaping_general,m2,10,5,20,"2 landscapers + 1 labourer",Public estimate,2026-01,Turf topsoil basic planting
+fencing_timber,lm,8,5,12,"2 fencers",Public estimate,2026-01,1.8m paling fence
+concrete_paths,m2,20,12,30,"1 concreter + 1 labourer",Public estimate,2026-01,Standard residential paths
+scaffolding_erect,m2,25,15,40,"2 scaffolders",Public estimate,2026-01,Standard tube and fitting
+scaffolding_dismantle,m2,35,25,50,"2 scaffolders",Public estimate,2026-01,Faster than erection
