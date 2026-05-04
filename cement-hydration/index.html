@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cement Hydration Simulator | ABPL90435</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:       #080F1A;
+  --bg2:      #0E1E30;
+  --bg3:      #152638;
+  --card:     #1A2F44;
+  --blue:     #00AAFF;
+  --amber:    #FFAA00;
+  --green:    #00E676;
+  --red:      #FF5252;
+  --teal:     #4ECDC4;
+  --yellow:   #FFE66D;
+  --lilac:    #B39DDB;
+  --t1:       #E0EEF8;
+  --t2:       #7AA8C4;
+  --border:   rgba(0,170,255,.18);
+  --uom:      #003893;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;overflow:hidden;}
+body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--t1);display:flex;flex-direction:column;}
+
+/* ── HEADER ── */
+header{
+  background:linear-gradient(120deg,#002060 0%,#003893 40%,#0E1E30 100%);
+  padding:10px 20px;display:flex;align-items:center;justify-content:space-between;
+  border-bottom:1px solid var(--border);flex-shrink:0;
+}
+.hdr-left h1{font-size:1.05rem;font-weight:600;letter-spacing:.4px;}
+.hdr-left p{font-size:.68rem;color:var(--t2);font-family:'JetBrains Mono',monospace;margin-top:1px;}
+.hdr-right{display:flex;align-items:center;gap:10px;}
+.badge{background:rgba(0,170,255,.12);border:1px solid var(--blue);color:var(--blue);
+  padding:3px 10px;border-radius:20px;font-size:.68rem;font-family:'JetBrains Mono',monospace;}
+
+/* ── MAIN GRID ── */
+.grid{display:grid;grid-template-columns:255px 1fr 300px;flex:1;overflow:hidden;border-top:1px solid var(--border);}
+.panel{background:var(--bg);overflow:hidden;display:flex;flex-direction:column;border-right:1px solid var(--border);}
+.panel:last-child{border-right:none;}
+.ph{padding:8px 14px;font-size:.62rem;letter-spacing:2px;text-transform:uppercase;
+  color:var(--blue);font-family:'JetBrains Mono',monospace;background:var(--bg2);
+  border-bottom:1px solid var(--border);flex-shrink:0;}
+
+/* ── LEFT PANEL ── */
+.left-scroll{overflow-y:auto;flex:1;}
+.left-scroll::-webkit-scrollbar{width:3px;}
+.left-scroll::-webkit-scrollbar-thumb{background:var(--border);}
+
+.pg{padding:11px 14px;border-bottom:1px solid var(--border);}
+.plabel{display:flex;justify-content:space-between;align-items:center;margin-bottom:7px;}
+.pname{font-size:.75rem;color:var(--t2);font-family:'JetBrains Mono',monospace;}
+.pval{font-size:.82rem;font-weight:600;color:var(--blue);font-family:'JetBrains Mono',monospace;}
+
+input[type=range]{width:100%;height:3px;-webkit-appearance:none;background:var(--bg3);
+  border-radius:2px;outline:none;cursor:pointer;}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:13px;height:13px;
+  border-radius:50%;background:var(--blue);cursor:pointer;box-shadow:0 0 8px rgba(0,170,255,.5);}
+.range-labels{display:flex;justify-content:space-between;font-size:.62rem;color:var(--t2);margin-top:3px;}
+
+select{width:100%;background:var(--card);color:var(--t1);border:1px solid var(--border);
+  border-radius:5px;padding:6px 8px;font-size:.78rem;outline:none;cursor:pointer;
+  font-family:'JetBrains Mono',monospace;}
+select option{background:var(--bg2);}
+
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:7px;padding:11px 14px;border-bottom:1px solid var(--border);}
+.sc{background:var(--card);border-radius:7px;padding:9px 8px;border:1px solid var(--border);text-align:center;}
+.slbl{font-size:.6rem;color:var(--t2);font-family:'JetBrains Mono',monospace;text-transform:uppercase;margin-bottom:3px;}
+.sval{font-size:1.05rem;font-weight:600;color:var(--amber);font-family:'JetBrains Mono',monospace;}
+.sunit{font-size:.6rem;color:var(--t2);margin-top:1px;}
+
+.phase-box{margin:10px 14px;padding:10px 12px;background:var(--card);border-radius:8px;border-left:3px solid var(--amber);}
+.phase-title{font-size:.72rem;font-family:'JetBrains Mono',monospace;font-weight:600;margin-bottom:5px;}
+.phase-text{font-size:.7rem;color:var(--t2);line-height:1.5;}
+
+/* ── CENTER CANVAS PANEL ── */
+#microCanvas{display:block;flex:1;width:100%;}
+
+.legend{display:flex;flex-wrap:wrap;gap:10px;padding:7px 14px;background:var(--bg2);
+  border-top:1px solid var(--border);flex-shrink:0;}
+.li{display:flex;align-items:center;gap:5px;font-size:.66rem;color:var(--t2);}
+.ld{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+
+.timeline{padding:9px 16px;background:var(--bg2);border-top:1px solid var(--border);flex-shrink:0;}
+.tcontrols{display:flex;align-items:center;gap:10px;}
+.play-btn{width:34px;height:34px;border-radius:50%;background:var(--blue);border:none;
+  color:#fff;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;transition:all .2s;}
+.play-btn:hover{background:#22CCFF;box-shadow:0 0 14px rgba(0,170,255,.6);}
+.tdisplay{font-family:'JetBrains Mono',monospace;font-size:.82rem;color:var(--blue);min-width:72px;}
+#timeSlider{flex:1;}
+.tlim{font-size:.65rem;color:var(--t2);font-family:'JetBrains Mono',monospace;flex-shrink:0;}
+
+/* ── RIGHT PANEL ── */
+.tabs{display:flex;border-bottom:1px solid var(--border);flex-shrink:0;}
+.tab{flex:1;padding:9px 4px;background:transparent;border:none;color:var(--t2);
+  font-size:.67rem;cursor:pointer;font-family:'JetBrains Mono',monospace;transition:all .2s;letter-spacing:.5px;}
+.tab.active{color:var(--blue);border-bottom:2px solid var(--blue);background:rgba(0,170,255,.06);}
+.tab:hover:not(.active){color:var(--t1);}
+
+.chart-wrap{flex:1;position:relative;padding:10px;}
+
+.phaselegend{padding:8px 14px;border-top:1px solid var(--border);flex-shrink:0;}
+.plrow{display:flex;align-items:center;gap:7px;padding:3px 0;font-size:.67rem;
+  color:var(--t2);font-family:'JetBrains Mono',monospace;}
+.plbar{width:16px;height:3px;border-radius:2px;flex-shrink:0;}
+
+/* ── RESPONSIVE CANVAS ── */
+.center-panel{flex:1;overflow:hidden;position:relative;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hdr-left">
+    <h1>🔬 Cement Hydration Simulator</h1>
+    <p>ABPL90435 · Concrete Construction Systems · University of Melbourne</p>
+  </div>
+  <div class="hdr-right">
+    <span class="badge">Dr. M. R. Hosseini</span>
+    <span class="badge" id="simStatus">READY</span>
+  </div>
+</header>
+
+<div class="grid">
+
+  <!-- ══ LEFT: PARAMETERS ══ -->
+  <div class="panel">
+    <div class="ph">⚙ Mix Parameters</div>
+    <div class="left-scroll">
+
+      <div class="pg">
+        <div class="plabel"><span class="pname">Cement Type</span></div>
+        <select id="cementType">
+          <option value="OPC">OPC / Type GP (General Purpose)</option>
+          <option value="SRPC">SRPC / Type HE (Low C₃A)</option>
+          <option value="RHPC">RHPC / Type HE (Rapid Hardening)</option>
+          <option value="LHC">Type LH (Low Heat)</option>
+          <option value="SRC">Type SR (Sulfate Resisting)</option>
+        </select>
+      </div>
+
+      <div class="pg">
+        <div class="plabel">
+          <span class="pname">w/c Ratio</span>
+          <span class="pval" id="wcDisplay">0.45</span>
+        </div>
+        <input type="range" id="wcRatio" min="0.25" max="0.70" step="0.01" value="0.45">
+        <div class="range-labels"><span>0.25 (stiff)</span><span>0.70 (wet)</span></div>
+      </div>
+
+      <div class="pg">
+        <div class="plabel">
+          <span class="pname">Curing Temperature</span>
+          <span class="pval" id="tempDisplay">20 °C</span>
+        </div>
+        <input type="range" id="temperature" min="5" max="60" step="1" value="20">
+        <div class="range-labels"><span>5°C (cold)</span><span>60°C (steam)</span></div>
+      </div>
+
+      <div class="pg">
+        <div class="plabel"><span class="pname">SCM Type</span></div>
+        <select id="scmType">
+          <option value="none">No SCM (plain Portland cement)</option>
+          <option value="flyash">Fly Ash – Class F</option>
+          <option value="slag">GGBFS (Ground Granulated Slag)</option>
+          <option value="silicafume">Silica Fume (Micro-silica)</option>
+        </select>
+      </div>
+
+      <div class="pg">
+        <div class="plabel">
+          <span class="pname">SCM Replacement Level</span>
+          <span class="pval" id="scmDisplay">0 %</span>
+        </div>
+        <input type="range" id="scmLevel" min="0" max="60" step="5" value="0">
+        <div class="range-labels"><span>0%</span><span>60%</span></div>
+      </div>
+
+      <div class="ph">📊 State at Current Time</div>
+      <div class="stats">
+        <div class="sc"><div class="slbl">α(t)</div><div class="sval" id="sa">—</div><div class="sunit">degree of hydration</div></div>
+        <div class="sc"><div class="slbl">f′c</div><div class="sval" id="ss">—</div><div class="sunit">MPa</div></div>
+        <div class="sc"><div class="slbl">Cum. Heat</div><div class="sval" id="sh">—</div><div class="sunit">J / g cement</div></div>
+        <div class="sc"><div class="slbl">Porosity</div><div class="sval" id="sp">—</div><div class="sunit">% vol. capillary</div></div>
+      </div>
+
+      <div class="phase-box" id="phaseBox">
+        <div class="phase-title" id="phaseName" style="color:var(--red)">① Dissolution Phase</div>
+        <div class="phase-text" id="phaseDesc">C₃A reacts instantly with water, producing ettringite (AFt). High initial heat rate. The mix pH rises sharply to ~13.</div>
+      </div>
+
+      <div class="ph">📐 Mix Design Reference</div>
+      <div class="pg" style="font-size:.68rem;color:var(--t2);font-family:'JetBrains Mono',monospace;line-height:1.8">
+        <div id="compLine">C₃S 65% · C₂S 10% · C₃A 10% · C₄AF 8%</div>
+        <div id="alphaU" style="margin-top:4px">α<sub>∞</sub> = — · Q<sub>max</sub> = — J/g</div>
+      </div>
+
+    </div><!-- left-scroll -->
+  </div><!-- left panel -->
+
+  <!-- ══ CENTER: MICROSTRUCTURE ══ -->
+  <div class="panel center-panel">
+    <div class="ph">🔭 Microstructure Cross-Section (cement paste)</div>
+    <canvas id="microCanvas"></canvas>
+    <div class="legend">
+      <div class="li"><div class="ld" style="background:#1E3F6B"></div>Capillary H₂O</div>
+      <div class="li"><div class="ld" style="background:#6B7280"></div>C₃S (unhydrated)</div>
+      <div class="li"><div class="ld" style="background:#4B5563"></div>C₂S / C₃A</div>
+      <div class="li"><div class="ld" style="background:#78350F"></div>C₄AF</div>
+      <div class="li"><div class="ld" style="background:#C0C8D0"></div>C-S-H Gel</div>
+      <div class="li"><div class="ld" style="background:#EEF2F7"></div>Ca(OH)₂</div>
+      <div class="li"><div class="ld" style="background:#FCD34D"></div>Ettringite</div>
+      <div class="li"><div class="ld" style="background:#93C5FD"></div>SCM particle</div>
+    </div>
+    <div class="timeline">
+      <div class="tcontrols">
+        <button class="play-btn" id="playBtn" title="Play / Pause">▶</button>
+        <span class="tdisplay" id="timeDisplay">t = 0 h</span>
+        <input type="range" id="timeSlider" min="0" max="199" value="0">
+        <span class="tlim">28 d</span>
+      </div>
+    </div>
+  </div><!-- center panel -->
+
+  <!-- ══ RIGHT: CHARTS ══ -->
+  <div class="panel">
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab(0)">α(t)</button>
+      <button class="tab" onclick="switchTab(1)">Heat</button>
+      <button class="tab" onclick="switchTab(2)">Strength</button>
+      <button class="tab" onclick="switchTab(3)">Porosity</button>
+    </div>
+    <div class="chart-wrap">
+      <canvas id="mainChart"></canvas>
+    </div>
+    <div class="phaselegend">
+      <div class="ph" style="margin:0 -14px 6px;padding:6px 14px">🕒 Hydration Phases</div>
+      <div class="plrow"><div class="plbar" style="background:#FF6B6B"></div>① Dissolution &nbsp; 0 – 15 min</div>
+      <div class="plrow"><div class="plbar" style="background:#4ECDC4"></div>② Induction &nbsp;&nbsp; 15 min – 4 h</div>
+      <div class="plrow"><div class="plbar" style="background:#FFE66D"></div>③ Acceleration 4 – 12 h</div>
+      <div class="plrow"><div class="plbar" style="background:#A8E6CF"></div>④ Deceleration 12 – 24 h</div>
+      <div class="plrow"><div class="plbar" style="background:#95B8D1"></div>⑤ Steady State &nbsp;24 h – 28 d</div>
+    </div>
+  </div><!-- right panel -->
+
+</div><!-- grid -->
+
+<script>
+// ══════════════════════════════════════════════════════════════
+// CEMENT TYPE DATABASE
+// ══════════════════════════════════════════════════════════════
+const CT = {
+  OPC:  { tau:12.5, beta:0.65, Qmax:375, f28:40, comp:{C3S:.65,C2S:.10,C3A:.10,C4AF:.08}, lbl:'OPC (Type GP)' },
+  SRPC: { tau:18,   beta:0.70, Qmax:330, f28:35, comp:{C3S:.45,C2S:.30,C3A:.05,C4AF:.12}, lbl:'SRPC (Low C₃A)' },
+  RHPC: { tau:7,    beta:0.63, Qmax:395, f28:50, comp:{C3S:.70,C2S:.06,C3A:.10,C4AF:.08}, lbl:'RHPC (Rapid)' },
+  LHC:  { tau:38,   beta:0.76, Qmax:248, f28:30, comp:{C3S:.35,C2S:.40,C3A:.04,C4AF:.12}, lbl:'LHC (Low Heat)' },
+  SRC:  { tau:22,   beta:0.72, Qmax:310, f28:37, comp:{C3S:.50,C2S:.26,C3A:.04,C4AF:.13}, lbl:'SRC (Sulfate Res.)' },
+};
+
+const SCM_DB = {
+  none:       { af:1.0,  hf:0.0,  df:1.0  },
+  flyash:     { af:0.50, hf:0.40, df:1.45 },
+  slag:       { af:0.78, hf:0.28, df:1.20 },
+  silicafume: { af:1.05, hf:0.20, df:0.88 },
+};
+
+const R_GAS = 8.314;
+const Ea    = 33500;
+const T_REF = 293.15; // 20°C in K
+
+// ══════════════════════════════════════════════════════════════
+// TIME VECTOR: 200 log-spaced points 0.01 h → 672 h (28 d)
+// ══════════════════════════════════════════════════════════════
+const N = 200;
+const TIMES = Array.from({length:N}, (_,i) =>
+  Math.pow(10, Math.log10(0.01) + (Math.log10(672)-Math.log10(0.01)) * i / (N-1))
+);
+
+// ══════════════════════════════════════════════════════════════
+// HYDRATION MODEL
+// ══════════════════════════════════════════════════════════════
+function alphaUltimate(wc) {
+  return Math.min(1.031 * wc / (0.194 + wc), 1.0);
+}
+
+function equivAge(t, tempC) {
+  const T = tempC + 273.15;
+  return t * Math.exp(-Ea / R_GAS * (1/T - 1/T_REF));
+}
+
+function alpha(te, aU, tau, beta) {
+  if (te < 1e-4) return 0;
+  return aU * Math.exp(-Math.pow(tau / te, beta));
+}
+
+function simulate(p) {
+  const ct  = CT[p.ct];
+  const scm = SCM_DB[p.scm];
+  const wc  = p.wc;
+  const T   = p.temp;
+  const sr  = p.scmR / 100;
+
+  const aU    = alphaUltimate(wc);
+  const tau   = ct.tau * scm.df;
+  const beta  = ct.beta;
+  const Qmax  = ct.Qmax * (1 - sr) + ct.Qmax * sr * scm.hf * scm.af;
+  const f28   = ct.f28  * (1 - sr * 0.25);
+
+  const a28 = alpha(equivAge(672, T), aU, tau, beta);
+  const aThresh = 0.05;
+
+  return TIMES.map(t => {
+    const te  = equivAge(t, T);
+    const a   = alpha(te, aU, tau, beta);
+    const Q   = a * Qmax;
+
+    // Strength: generalised Carino model
+    let fc = 0;
+    if (a > aThresh && a28 > aThresh) {
+      fc = Math.max(0, f28 * Math.pow((a - aThresh) / (a28 - aThresh), 1.6));
+    }
+
+    // Porosity: Powers' model φ_cap = (w/c − 0.36α) / (w/c + 0.317)
+    const por = Math.max(0, Math.min(100, (wc - 0.36*a) / (wc + 0.317) * 100));
+
+    return { t, a, Q, fc, por };
+  });
+}
+
+function heatRate(data) {
+  return data.map((d, i) => {
+    if (i === 0) return 0;
+    const dt = d.t - data[i-1].t;
+    return dt > 0 ? (d.Q - data[i-1].Q) / dt : 0;
+  });
+}
+
+// ══════════════════════════════════════════════════════════════
+// PHASE LOOKUP
+// ══════════════════════════════════════════════════════════════
+function getPhase(t) {
+  if (t < 0.25) return { name:'① Dissolution',  color:'#FF6B6B',
+    desc:'Rapid dissolution of cement phases. C₃A reacts instantly with water forming ettringite needles (AFt). Strongly exothermic. pH rises to ~13.' };
+  if (t < 4)   return { name:'② Induction',    color:'#4ECDC4',
+    desc:'Dormant (induction) period. A thin C-S-H layer passivates cement grains, slowing reaction. Low heat rate. Mix remains workable — initial setting not yet reached.' };
+  if (t < 12)  return { name:'③ Acceleration', color:'#FFE66D',
+    desc:'Rapid hydration of C₃S → C-S-H gel + Ca(OH)₂. Maximum heat evolution rate. Initial and final set occur. Microstructure rapidly develops connectivity and rigidity.' };
+  if (t < 24)  return { name:'④ Deceleration', color:'#A8E6CF',
+    desc:'Diffusion-controlled reaction as gel thickens around grains. C₂S begins contributing. Strength development accelerates. Capillary porosity reduces significantly.' };
+  return       { name:'⑤ Steady State',  color:'#95B8D1',
+    desc:'Slow, long-term continued hydration. C₂S and residual C₃S react slowly. Pozzolanic reactions of SCMs (fly ash, slag) become significant. Microstructure densification continues for months to years.' };
+}
+
+// ══════════════════════════════════════════════════════════════
+// PARTICLES (microstructure)
+// ══════════════════════════════════════════════════════════════
+let particles = [];
+
+function buildParticles(W, H, ct, scmR) {
+  const comp = CT[ct].comp;
+  const sr   = scmR / 100;
+  const n    = 130;
+  const ps   = [];
+
+  for (let i = 0; i < n; i++) {
+    const r2 = Math.random();
+    let type;
+    if      (r2 < comp.C3S)                          type = 'C3S';
+    else if (r2 < comp.C3S + comp.C2S)               type = 'C2S';
+    else if (r2 < comp.C3S + comp.C2S + comp.C3A)    type = 'C3A';
+    else                                              type = 'C4AF';
+    const rad = 4 + Math.random() * 13;
+    ps.push({ x: Math.random()*W, y: Math.random()*H, rad, orig: rad, type, jitter: Math.random() });
+  }
+  if (sr > 0) {
+    for (let i = 0; i < Math.floor(50 * sr); i++) {
+      const rad = 3 + Math.random() * 7;
+      ps.push({ x: Math.random()*W, y: Math.random()*H, rad, orig: rad, type:'SCM', jitter: Math.random() });
+    }
+  }
+  return ps;
+}
+
+// ══════════════════════════════════════════════════════════════
+// DRAW MICROSTRUCTURE
+// ══════════════════════════════════════════════════════════════
+function drawMicro(canvas, a, t) {
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  if (!W || !H) return;
+
+  // Pore water background — darkens as pores fill
+  const pR = Math.round(20 - 12*a);
+  const pG = Math.round(45 - 25*a);
+  const pB = Math.round(90 - 35*a);
+  ctx.fillStyle = `rgb(${pR},${pG},${pB})`;
+  ctx.fillRect(0, 0, W, H);
+
+  // C-S-H gel matrix fills space
+  if (a > 0.08) {
+    ctx.fillStyle = `rgba(165,175,185,${Math.min(a * 0.55, 0.50)})`;
+    ctx.fillRect(0, 0, W, H);
+  }
+
+  // Ca(OH)₂ hexagonal plates
+  if (a > 0.15) {
+    const nCH = Math.floor(a * 28);
+    for (let i = 0; i < nCH; i++) {
+      const sx = (i * 137.508 * 31.41) % 1 * W;
+      const sy = (i * 137.508 * 17.32) % 1 * H;
+      const sz = 4 + (i * 7 % 7);
+      ctx.fillStyle = `rgba(230,240,250,${0.35 + a * 0.4})`;
+      ctx.save(); ctx.translate(sx, sy); ctx.rotate(i * 0.55);
+      ctx.fillRect(-sz/2, -sz/5, sz, sz/2.5);
+      ctx.restore();
+    }
+  }
+
+  // Ettringite needles — early only
+  if (t < 10 && a < 0.35) {
+    const inten = Math.max(0, 1 - a * 3) * Math.min(1, t * 4);
+    if (inten > 0.05) {
+      ctx.strokeStyle = `rgba(252,211,77,${inten * 0.75})`;
+      ctx.lineWidth = 1;
+      for (let i = 0; i < 22; i++) {
+        const bx = (i * 89.44 * 22.36) % 1 * W;
+        const by = (i * 89.44 * 31.62) % 1 * H;
+        const len = 9 + i % 13;
+        const ang = i * 1.618;
+        ctx.beginPath();
+        ctx.moveTo(bx, by);
+        ctx.lineTo(bx + Math.cos(ang)*len, by + Math.sin(ang)*len);
+        ctx.stroke();
+      }
+    }
+  }
+
+  // Cement particles
+  particles.forEach(p => {
+    const hydFrac = Math.max(0, 1 - a * (0.45 + p.jitter * 0.55));
+    const r = Math.max(p.orig * hydFrac, 0.4);
+
+    let fillColor;
+    switch (p.type) {
+      case 'C3S':  fillColor = '#6B7280'; break;
+      case 'C2S':  fillColor = '#4B5563'; break;
+      case 'C3A':  fillColor = '#374151'; break;
+      case 'C4AF': fillColor = '#6B3A1F'; break;
+      default:     fillColor = '#93C5FD'; // SCM
+    }
+
+    // C-S-H shell
+    if (a > 0.04 && p.type !== 'SCM') {
+      const shellR = r + p.orig * a * 0.9;
+      const g = ctx.createRadialGradient(p.x, p.y, r, p.x, p.y, shellR);
+      g.addColorStop(0, 'rgba(190,200,210,0.75)');
+      g.addColorStop(1, 'rgba(190,200,210,0.0)');
+      ctx.fillStyle = g;
+      ctx.beginPath(); ctx.arc(p.x, p.y, shellR, 0, Math.PI*2); ctx.fill();
+    }
+
+    // Core
+    if (r > 0.4) {
+      ctx.fillStyle = fillColor;
+      ctx.beginPath(); ctx.arc(p.x, p.y, r, 0, Math.PI*2); ctx.fill();
+    }
+  });
+
+  // HUD: alpha overlay
+  ctx.fillStyle = 'rgba(0,0,0,0.55)';
+  ctx.fillRect(W-90, H-26, 84, 20);
+  ctx.fillStyle = '#8EAEC4';
+  ctx.font = '11px JetBrains Mono,monospace';
+  ctx.fillText('α = ' + a.toFixed(3), W-84, H-10);
+
+  // Scale bar decoration
+  ctx.fillStyle = 'rgba(0,0,0,0.55)';
+  ctx.fillRect(10, H-26, 88, 20);
+  ctx.fillStyle = '#8EAEC4';
+  ctx.fillText('≈ 100 μm', 15, H-10);
+}
+
+// ══════════════════════════════════════════════════════════════
+// CHART
+// ══════════════════════════════════════════════════════════════
+let chartInst = null;
+let activeTab = 0;
+let simData   = [];
+
+const CHART_COLORS = {
+  0: { line:'#00AAFF', fill:'rgba(0,170,255,0.10)' },
+  1: { line:'#FF6B6B', fill:'rgba(255,107,107,0.10)' },
+  2: { line:'#A8E6CF', fill:'rgba(168,230,207,0.10)' },
+  3: { line:'#95B8D1', fill:'rgba(149,184,209,0.10)' },
+};
+
+const CHART_YLABELS = [
+  'Degree of Hydration α',
+  'Cumulative Heat (J/g)',
+  'Compressive Strength (MPa)',
+  'Capillary Porosity (%)',
+];
+
+const CHART_KEYS = ['a','Q','fc','por'];
+
+function baseChartOpts(ylabel) {
+  return {
+    responsive:true, maintainAspectRatio:false, animation:{ duration:250 },
+    plugins:{
+      legend:{ labels:{ color:'#7AA8C4', font:{ family:'JetBrains Mono', size:10 } } },
+      tooltip:{
+        backgroundColor:'#1A2F44', borderColor:'rgba(0,170,255,0.3)',
+        borderWidth:1, titleColor:'#00AAFF', bodyColor:'#E0EEF8',
+        titleFont:{ family:'JetBrains Mono' }, bodyFont:{ family:'JetBrains Mono', size:11 },
+      }
+    },
+    scales:{
+      x:{
+        type:'logarithmic',
+        grid:{ color:'rgba(0,170,255,0.07)' },
+        ticks:{
+          color:'#7AA8C4', font:{ family:'JetBrains Mono', size:9 }, maxRotation:0,
+          callback:(v) => {
+            const m = {0.01:'0.01h',0.1:'0.1h',1:'1h',10:'10h',100:'4d',672:'28d'};
+            return m[v] !== undefined ? m[v] : null;
+          }
+        },
+        title:{ display:true, text:'Time (hours — log scale)', color:'#7AA8C4', font:{ family:'JetBrains Mono', size:9 } }
+      },
+      y:{
+        grid:{ color:'rgba(0,170,255,0.07)' },
+        ticks:{ color:'#7AA8C4', font:{ family:'JetBrains Mono', size:9 } },
+        title:{ display:true, text:ylabel, color:'#7AA8C4', font:{ family:'JetBrains Mono', size:9 } }
+      }
+    }
+  };
+}
+
+function buildChart() {
+  const canvas = document.getElementById('mainChart');
+  if (chartInst) chartInst.destroy();
+
+  const key = CHART_KEYS[activeTab];
+  const cc  = CHART_COLORS[activeTab];
+  const xy  = simData.map(d => ({ x: d.t, y: d[key] }));
+
+  if (activeTab === 1) {
+    // Heat: dual-axis (cumulative + rate)
+    const rates = heatRate(simData);
+    chartInst = new Chart(canvas, {
+      type:'line',
+      data:{
+        datasets:[
+          { label:'Cumulative Heat', data: simData.map(d => ({x:d.t,y:d.Q})),
+            borderColor:'#FF6B6B', backgroundColor:'rgba(255,107,107,0.08)',
+            fill:true, tension:0.4, pointRadius:0, borderWidth:2, yAxisID:'y' },
+          { label:'Heat Rate', data: simData.map((d,i) => ({x:d.t,y:rates[i]})),
+            borderColor:'#FFE66D', backgroundColor:'transparent',
+            fill:false, tension:0.4, pointRadius:0, borderWidth:1.5,
+            borderDash:[4,3], yAxisID:'y2' }
+        ]
+      },
+      options:{
+        ...baseChartOpts('Cumulative Heat (J/g)'),
+        scales:{
+          ...baseChartOpts().scales,
+          x:{ type:'logarithmic', grid:{color:'rgba(0,170,255,0.07)'},
+              ticks:{ color:'#7AA8C4', font:{family:'JetBrains Mono',size:9}, maxRotation:0,
+                callback:(v)=>({0.01:'0.01h',0.1:'0.1h',1:'1h',10:'10h',100:'4d',672:'28d'}[v]) },
+              title:{display:true,text:'Time (hours — log scale)',color:'#7AA8C4',font:{family:'JetBrains Mono',size:9}} },
+          y:{ position:'left', grid:{color:'rgba(0,170,255,0.07)'},
+              ticks:{color:'#FF6B6B',font:{family:'JetBrains Mono',size:9}},
+              title:{display:true,text:'Cumulative Heat (J/g)',color:'#FF6B6B',font:{family:'JetBrains Mono',size:9}} },
+          y2:{ position:'right', grid:{drawOnChartArea:false},
+               ticks:{color:'#FFE66D',font:{family:'JetBrains Mono',size:9}},
+               title:{display:true,text:'Heat Rate (J/g/h)',color:'#FFE66D',font:{family:'JetBrains Mono',size:9}} }
+        },
+        plugins:{
+          legend:{labels:{color:'#7AA8C4',font:{family:'JetBrains Mono',size:10}}},
+          tooltip:{backgroundColor:'#1A2F44',borderColor:'rgba(0,170,255,0.3)',borderWidth:1,
+            titleColor:'#00AAFF',bodyColor:'#E0EEF8',
+            titleFont:{family:'JetBrains Mono'},bodyFont:{family:'JetBrains Mono',size:11}}
+        },
+        responsive:true, maintainAspectRatio:false, animation:{duration:250}
+      }
+    });
+  } else {
+    chartInst = new Chart(canvas, {
+      type:'line',
+      data:{ datasets:[{ label: CHART_YLABELS[activeTab], data:xy,
+        borderColor:cc.line, backgroundColor:cc.fill, fill:true,
+        tension:0.4, pointRadius:0, borderWidth:2 }] },
+      options: baseChartOpts(CHART_YLABELS[activeTab])
+    });
+  }
+}
+
+function switchTab(tab) {
+  activeTab = tab;
+  document.querySelectorAll('.tab').forEach((b,i) => b.classList.toggle('active', i===tab));
+  buildChart();
+}
+
+// ══════════════════════════════════════════════════════════════
+// STATE & PARAMS
+// ══════════════════════════════════════════════════════════════
+let params = { ct:'OPC', wc:0.45, temp:20, scm:'none', scmR:0 };
+let curIdx  = 0;
+let playing = false;
+let rafId   = null;
+
+function run() {
+  simData  = simulate(params);
+  const canvas = document.getElementById('microCanvas');
+  if (canvas.width > 0) particles = buildParticles(canvas.width, canvas.height, params.ct, params.scmR);
+  buildChart();
+  refresh();
+
+  // Update composition line
+  const comp = CT[params.ct].comp;
+  document.getElementById('compLine').textContent =
+    `C₃S ${(comp.C3S*100).toFixed(0)}% · C₂S ${(comp.C2S*100).toFixed(0)}% · C₃A ${(comp.C3A*100).toFixed(0)}% · C₄AF ${(comp.C4AF*100).toFixed(0)}%`;
+  const aU = alphaUltimate(params.wc);
+  document.getElementById('alphaU').innerHTML =
+    `α<sub>∞</sub> = ${aU.toFixed(3)} &nbsp;·&nbsp; Q<sub>max</sub> = ${Math.round(CT[params.ct].Qmax * (1 - params.scmR/100))} J/g`;
+}
+
+function refresh() {
+  if (!simData.length) return;
+  const d = simData[curIdx];
+  const ph = getPhase(d.t);
+
+  // Stats
+  document.getElementById('sa').textContent = d.a.toFixed(3);
+  document.getElementById('ss').textContent = d.fc.toFixed(1);
+  document.getElementById('sh').textContent = Math.round(d.Q);
+  document.getElementById('sp').textContent = d.por.toFixed(1);
+
+  // Phase box
+  document.getElementById('phaseName').textContent = ph.name;
+  document.getElementById('phaseName').style.color  = ph.color;
+  document.getElementById('phaseDesc').textContent  = ph.desc;
+  document.getElementById('phaseBox').style.borderColor = ph.color;
+
+  // Time display
+  const t = d.t;
+  const tStr = t < 1 ? `t = ${(t*60).toFixed(0)} min` :
+               t < 48 ? `t = ${t.toFixed(1)} h` :
+               `t = ${(t/24).toFixed(1)} d`;
+  document.getElementById('timeDisplay').textContent = tStr;
+
+  // Microstructure
+  const canvas = document.getElementById('microCanvas');
+  drawMicro(canvas, d.a, d.t);
+}
+
+// ── PLAYBACK ──
+function animPlay() {
+  if (!playing) return;
+  curIdx++;
+  if (curIdx >= simData.length) {
+    curIdx = simData.length - 1;
+    playing = false;
+    document.getElementById('playBtn').textContent = '▶';
+    document.getElementById('simStatus').textContent = 'DONE';
+    refresh();
+    return;
+  }
+  document.getElementById('timeSlider').value = curIdx;
+  refresh();
+
+  const t = simData[curIdx].t;
+  const delay = t < 0.5 ? 100 : t < 12 ? 55 : t < 72 ? 30 : 18;
+  rafId = setTimeout(animPlay, delay);
+}
+
+// ── CONTROLS ──
+document.getElementById('cementType').addEventListener('change', e => { params.ct = e.target.value; run(); });
+document.getElementById('scmType').addEventListener('change', e => { params.scm = e.target.value; run(); });
+document.getElementById('wcRatio').addEventListener('input', e => {
+  params.wc = parseFloat(e.target.value);
+  document.getElementById('wcDisplay').textContent = params.wc.toFixed(2);
+  run();
+});
+document.getElementById('temperature').addEventListener('input', e => {
+  params.temp = parseInt(e.target.value);
+  document.getElementById('tempDisplay').textContent = params.temp + ' °C';
+  run();
+});
+document.getElementById('scmLevel').addEventListener('input', e => {
+  params.scmR = parseInt(e.target.value);
+  document.getElementById('scmDisplay').textContent = params.scmR + ' %';
+  run();
+});
+document.getElementById('timeSlider').addEventListener('input', e => {
+  curIdx = parseInt(e.target.value);
+  refresh();
+});
+document.getElementById('playBtn').addEventListener('click', () => {
+  if (playing) {
+    playing = false;
+    clearTimeout(rafId);
+    document.getElementById('playBtn').textContent = '▶';
+    document.getElementById('simStatus').textContent = 'PAUSED';
+  } else {
+    if (curIdx >= simData.length - 1) curIdx = 0;
+    playing = true;
+    document.getElementById('playBtn').textContent = '⏸';
+    document.getElementById('simStatus').textContent = 'SIMULATING';
+    animPlay();
+  }
+});
+
+// ── CANVAS SIZING ──
+function sizeCanvas() {
+  const canvas = document.getElementById('microCanvas');
+  const parent = canvas.parentElement;
+  // Height = panel height minus ph bar (30) legend (38) timeline (58)
+  canvas.width  = parent.clientWidth;
+  canvas.height = parent.clientHeight - 30 - 38 - 58;
+  particles = buildParticles(canvas.width, canvas.height, params.ct, params.scmR);
+  refresh();
+}
+
+window.addEventListener('load', () => {
+  sizeCanvas();
+  run();
+});
+window.addEventListener('resize', sizeCanvas);
+</script>
+</body>
+</html>

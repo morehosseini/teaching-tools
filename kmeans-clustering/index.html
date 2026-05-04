@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>K-Means Clustering Explorer · Dr. M. R. Hosseini · University of Melbourne</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,700;1,9..144,400&family=IBM+Plex+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{min-height:100%;background:#fff;font-family:'IBM Plex Sans',Arial,sans-serif;color:#0D1330;}
+/* UoM topbar */
+.topbar{background:#000F46;color:rgba(255,255,255,.7);font-size:.7rem;padding:5px 40px;
+  display:flex;justify-content:space-between;align-items:center;font-family:'JetBrains Mono',monospace;}
+.topbar a{color:#46C8F0;text-decoration:none;}
+/* Hero strip */
+.hero-strip{background:linear-gradient(135deg,#000F46 0%,#001A6E 60%,#002080 100%);
+  padding:20px 40px 18px;display:flex;align-items:center;gap:20px;}
+.back-link{color:rgba(255,255,255,.65);font-size:.78rem;text-decoration:none;
+  font-family:'JetBrains Mono',monospace;transition:color .2s;}
+.back-link:hover{color:#FFD629;}
+.hero-title{font-family:'Fraunces',Georgia,serif;font-size:1.55rem;font-weight:600;
+  color:#fff;line-height:1.2;}
+.hero-sub{font-size:.75rem;color:rgba(255,255,255,.55);margin-top:3px;}
+.badge-live{background:rgba(70,200,240,.2);border:1px solid #46C8F0;color:#46C8F0;
+  font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:1px;
+  padding:3px 9px;border-radius:10px;font-weight:500;white-space:nowrap;}
+/* Main content */
+.main{max-width:900px;margin:0 auto;padding:32px 24px 56px;}
+/* Footer */
+footer{background:#000F46;color:rgba(255,255,255,.5);font-size:.72rem;
+  padding:20px 40px;line-height:1.7;}
+footer a{color:#46C8F0;text-decoration:none;}
+.cricos{margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,.1);
+  font-size:.65rem;color:rgba(255,255,255,.3);}
+
+/* === React Component Styles (scoped via class prefix) === */
+.km-wrap{width:100%;max-width:860px;margin:0 auto;padding:0;font-family:'IBM Plex Sans',Arial,sans-serif;}
+.km-title{font-family:'Fraunces',Georgia,serif;font-size:1.55rem;font-weight:600;
+  color:#000F46;margin-bottom:8px;letter-spacing:-.2px;}
+.km-subtitle{font-size:.8rem;color:#5A6080;margin-bottom:24px;line-height:1.6;}
+
+/* Chart wrapper */
+.km-chart-wrap{position:relative;width:100%;}
+.km-chart-inner{position:relative;border-left:2px solid #d1d5db;border-bottom:2px solid #d1d5db;
+  aspect-ratio:2/1;}
+.km-svg{width:100%;height:100%;display:block;}
+.km-axis-y-title{position:absolute;left:-52px;top:50%;transform:translateY(-50%) rotate(-90deg);
+  font-size:.75rem;color:#5A6080;font-weight:500;white-space:nowrap;}
+.km-axis-x-title{position:absolute;bottom:-40px;left:50%;transform:translateX(-50%);
+  font-size:.75rem;color:#5A6080;font-weight:500;}
+.km-axis-y-labels{position:absolute;top:0;left:-38px;bottom:0;
+  display:flex;flex-direction:column;justify-content:space-between;
+  font-size:.65rem;color:#5A6080;text-align:right;}
+.km-axis-x-labels{position:absolute;bottom:-22px;left:0;right:0;
+  display:flex;justify-content:space-between;font-size:.65rem;color:#5A6080;padding:0 2px;}
+
+/* Info box */
+.km-info-box{margin-top:50px;display:flex;border-left:5px solid #000F46;
+  background:#F2F4F8;border-radius:0 6px 6px 0;overflow:hidden;box-shadow:0 2px 8px rgba(0,15,70,.07);}
+.km-info-text{padding:14px 18px;font-size:.82rem;color:#0D1330;line-height:1.7;}
+.km-info-text strong{font-weight:600;color:#000F46;}
+
+/* Step tabs */
+.km-tabs{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:16px;}
+.km-tab{padding:6px 14px;border-radius:20px;font-size:.73rem;font-weight:500;
+  border:1.5px solid;cursor:pointer;transition:all .15s;font-family:'IBM Plex Sans',Arial,sans-serif;
+  background:#fff;}
+.km-tab-active{background:#EFF6FF;border-color:#000F46;color:#000F46;}
+.km-tab-inactive{border-color:#d1d5db;color:#5A6080;}
+.km-tab-inactive:hover{background:#F2F4F8;}
+.km-play-btn{margin-left:auto;padding:6px 16px;border-radius:20px;font-size:.73rem;
+  font-weight:700;border:1.5px solid;cursor:pointer;font-family:'IBM Plex Sans',Arial,sans-serif;
+  transition:all .15s;}
+.km-play-btn-playing{background:#FEF2F2;color:#DC2626;border-color:#FCA5A5;}
+.km-play-btn-stopped{background:#F0FDF4;color:#16A34A;border-color:#86EFAC;}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <span>Faculty of Architecture, Building and Planning · The University of Melbourne</span>
+  <a href="mailto:mreza.hosseini@unimelb.edu.au">mreza.hosseini@unimelb.edu.au</a>
+</div>
+
+<div class="hero-strip">
+  <div>
+    <div style="margin-bottom:10px;">
+      <a class="back-link" href="../index.html">← Back to Teaching Hub</a>
+    </div>
+    <div class="hero-title">K-Means Clustering Explorer</div>
+    <div class="hero-sub">AI in Construction · Unsupervised Learning · ABPL90331</div>
+  </div>
+  <div style="margin-left:auto;flex-shrink:0;">
+    <span class="badge-live">● LIVE</span>
+  </div>
+</div>
+
+<div class="main">
+  <div id="km-root"></div>
+</div>
+
+<footer>
+  <div style="max-width:860px;margin:0 auto;display:flex;justify-content:space-between;flex-wrap:wrap;gap:16px;">
+    <div>
+      <strong style="color:#fff;display:block;margin-bottom:4px;">Dr. M. Reza Hosseini</strong>
+      Senior Lecturer in Construction Technology<br>
+      Faculty of Architecture, Building and Planning · The University of Melbourne<br>
+      <a href="mailto:mreza.hosseini@unimelb.edu.au">mreza.hosseini@unimelb.edu.au</a>
+    </div>
+    <div>
+      <strong style="color:#fff;display:block;margin-bottom:4px;">Resources</strong>
+      <a href="../index.html">← Teaching Hub</a><br>
+      <a href="../index.html#ai">AI in Construction</a>
+    </div>
+  </div>
+  <div class="cricos">
+    © 2025 M. Reza Hosseini · The University of Melbourne · CRICOS Provider Code: 00116K
+  </div>
+</footer>
+
+<script type="text/babel">
+const { useState, useEffect } = React;
+
+const App = () => {
+  const [step, setStep] = useState(1);
+  const [isPlaying, setIsPlaying] = useState(false);
+
+  useEffect(() => {
+    let interval;
+    if (isPlaying) {
+      interval = setInterval(() => {
+        setStep((prevStep) => (prevStep >= 5 ? 1 : prevStep + 1));
+      }, 2500);
+    }
+    return () => clearInterval(interval);
+  }, [isPlaying]);
+
+  const rawPoints = [
+    { id: 1, x: 12, y: 8, cluster: 1 }, { id: 2, x: 15, y: 12, cluster: 1 }, { id: 3, x: 18, y: 6, cluster: 1 },
+    { id: 4, x: 20, y: 11, cluster: 1 }, { id: 5, x: 22, y: 14, cluster: 1 }, { id: 6, x: 25, y: 9, cluster: 1 },
+    { id: 7, x: 27, y: 5, cluster: 1 }, { id: 8, x: 30, y: 13, cluster: 1 }, { id: 9, x: 35, y: 38, cluster: 1 },
+    { id: 10, x: 38, y: 30, cluster: 1 }, { id: 11, x: 42, y: 45, cluster: 1 }, { id: 12, x: 48, y: 40, cluster: 1 },
+    { id: 13, x: 55, y: 55, cluster: 2 }, { id: 14, x: 58, y: 20, cluster: 2 }, { id: 15, x: 60, y: 50, cluster: 2 },
+    { id: 16, x: 62, y: 55, cluster: 2 }, { id: 17, x: 65, y: 60, cluster: 2 }, { id: 18, x: 67, y: 57, cluster: 2 },
+    { id: 19, x: 69, y: 58, cluster: 2 }, { id: 20, x: 72, y: 65, cluster: 2 }, { id: 21, x: 75, y: 62, cluster: 2 },
+    { id: 22, x: 77, y: 64, cluster: 2 }, { id: 23, x: 80, y: 70, cluster: 2 }, { id: 24, x: 83, y: 68, cluster: 2 },
+    { id: 25, x: 85, y: 40, cluster: 3 }, { id: 26, x: 88, y: 30, cluster: 3 }, { id: 27, x: 92, y: 48, cluster: 3 },
+    { id: 28, x: 95, y: 23, cluster: 3 }, { id: 29, x: 97, y: 25, cluster: 3 }, { id: 30, x: 100, y: 28, cluster: 3 },
+    { id: 31, x: 103, y: 20, cluster: 3 }, { id: 32, x: 106, y: 26, cluster: 3 }, { id: 33, x: 109, y: 16, cluster: 3 },
+    { id: 34, x: 112, y: 18, cluster: 3 }, { id: 35, x: 115, y: 15, cluster: 3 }, { id: 36, x: 118, y: 22, cluster: 3 },
+    { id: 37, x: 122, y: 19, cluster: 3 }
+  ];
+
+  const points = rawPoints.map(p => ({
+    ...p,
+    x: (p.x / 130) * 100,
+    y: (p.y / 80) * 100
+  }));
+
+  const stepContent = {
+    1: {
+      title: "1 · Raw data",
+      text: "No labels yet. Each dot is a construction project. The axes measure cost overrun and schedule delay. No obvious groupings are visually defined initially.",
+      activeColors: false,
+      showCentroids: false,
+      centroids: []
+    },
+    2: {
+      title: "2 · Place centroids",
+      text: "Initialize algorithm. We place 3 random cluster centers (centroids) represented by the colored stars. These act as our initial risk profile centers.",
+      activeColors: false,
+      showCentroids: true,
+      centroids: [{ x: 30, y: 80, c: '#3b82f6' }, { x: 70, y: 30, c: '#ef4444' }, { x: 60, y: 80, c: '#10b981' }]
+    },
+    3: {
+      title: "3 · Assign clusters",
+      text: "Assigning groups. Each construction project is computationally assigned to the centroid it is closest to, creating our initial rough clusters.",
+      activeColors: true,
+      showCentroids: true,
+      centroids: [{ x: 30, y: 80, c: '#3b82f6' }, { x: 70, y: 30, c: '#ef4444' }, { x: 60, y: 80, c: '#10b981' }]
+    },
+    4: {
+      title: "4 · Update centroids",
+      text: "Updating centers. The algorithm recalculates the true center (mean) of each newly formed group and moves the centroid star to that new position.",
+      activeColors: true,
+      showCentroids: true,
+      centroids: [{ x: 22, y: 25, c: '#3b82f6' }, { x: 55, y: 60, c: '#ef4444' }, { x: 80, y: 30, c: '#10b981' }]
+    },
+    5: {
+      title: "5 · Final groupings",
+      text: "Optimization complete. The process repeats until the centroids stabilize. We have successfully identified 3 distinct project risk profiles within the portfolio.",
+      activeColors: true,
+      showCentroids: true,
+      centroids: [{ x: 18, y: 18, c: '#3b82f6' }, { x: 58, y: 72, c: '#ef4444' }, { x: 85, y: 35, c: '#10b981' }]
+    }
+  };
+
+  const currentStep = stepContent[step];
+
+  const clusterColors = { 1: '#3b82f6', 2: '#ef4444', 3: '#10b981' };
+
+  const StarPath = ({ x, y, color }) => {
+    const svgX = x;
+    const svgY = 100 - y;
+    return (
+      <g transform={`translate(${svgX}, ${svgY})`} style={{transition:'all 0.8s ease'}}>
+        <path
+          d="M0,-4 L1.1,-1.1 L4,-1.1 L1.7,0.7 L2.5,3.8 L0,2 L-2.5,3.8 L-1.7,0.7 L-4,-1.1 L-1.1,-1.1 Z"
+          fill={color}
+          stroke="white"
+          strokeWidth="0.6"
+        />
+      </g>
+    );
+  };
+
+  return (
+    <div className="km-wrap">
+      <div className="km-title">K-Means Clustering — Construction Project Portfolio</div>
+      <div className="km-subtitle">
+        An unsupervised machine learning algorithm that partitions projects into K clusters based on similarity.
+        Each step below shows how the algorithm progressively refines 3 distinct project risk profiles.
+      </div>
+
+      <div className="km-chart-wrap" style={{paddingLeft:'56px', paddingBottom:'50px'}}>
+        <div className="km-axis-y-title">Schedule delay →</div>
+        <div className="km-axis-y-labels">
+          <span>100%</span><span>75%</span><span>50%</span><span>25%</span><span>0%</span>
+        </div>
+        <div className="km-chart-inner">
+          <svg viewBox="0 0 100 100" className="km-svg" preserveAspectRatio="none">
+            {[25,50,75].map(l => (
+              <React.Fragment key={l}>
+                <line x1="0" y1={100-l} x2="100" y2={100-l} stroke="#f0f0f0" strokeWidth="0.3"/>
+                <line x1={l} y1="0" x2={l} y2="100" stroke="#f0f0f0" strokeWidth="0.3"/>
+              </React.Fragment>
+            ))}
+            {points.map(pt => (
+              <circle
+                key={pt.id}
+                cx={pt.x}
+                cy={100 - pt.y}
+                r="1.6"
+                fill={currentStep.activeColors ? clusterColors[pt.cluster] : '#a0aec0'}
+                style={{transition:'fill 0.5s ease'}}
+              />
+            ))}
+            {currentStep.showCentroids && currentStep.centroids.map((c, i) => (
+              <StarPath key={i} x={c.x} y={c.y} color={c.c} />
+            ))}
+          </svg>
+        </div>
+        <div className="km-axis-x-labels">
+          <span>0%</span><span>25%</span><span>50%</span><span>75%</span><span>100%</span>
+        </div>
+        <div className="km-axis-x-title">Cost overrun →</div>
+      </div>
+
+      <div className="km-info-box">
+        <div className="km-info-text">
+          <strong>{currentStep.title.split('·')[1].trim()}: </strong>
+          {currentStep.text}
+        </div>
+      </div>
+
+      <div className="km-tabs">
+        {[1,2,3,4,5].map(num => (
+          <button
+            key={num}
+            onClick={() => { setStep(num); setIsPlaying(false); }}
+            className={`km-tab ${step === num ? 'km-tab-active' : 'km-tab-inactive'}`}
+          >
+            {stepContent[num].title}
+          </button>
+        ))}
+        <button
+          onClick={() => setIsPlaying(!isPlaying)}
+          className={`km-play-btn ${isPlaying ? 'km-play-btn-playing' : 'km-play-btn-stopped'}`}
+        >
+          {isPlaying ? '⏸ Pause' : '▶ Auto-Play'}
+        </button>
+      </div>
+
+      <div style={{marginTop:'32px',padding:'20px',background:'#F2F4F8',borderRadius:'8px',fontSize:'.8rem',color:'#5A6080',lineHeight:'1.7'}}>
+        <strong style={{color:'#000F46',display:'block',marginBottom:'6px'}}>About this visualisation</strong>
+        This interactive demonstrates the K-Means algorithm (k=3) applied to a synthetic construction project portfolio.
+        The two axes represent two common project performance indicators — cost overrun (%) and schedule delay (%).
+        The algorithm automatically discovers three distinct risk profiles: <span style={{color:'#3b82f6',fontWeight:600}}>Low-risk projects</span> (bottom-left),
+        <span style={{color:'#ef4444',fontWeight:600}}> High-risk projects</span> (centre-top), and
+        <span style={{color:'#10b981',fontWeight:600}}> Moderate-risk projects</span> (right). No human labelling was required — the algorithm infers the groupings purely from the data geometry.
+        <br/><br/>
+        <strong style={{color:'#000F46'}}>Course context:</strong> ABPL90331 AI in Construction — Week 4: Unsupervised Learning &amp; Pattern Discovery
+      </div>
+    </div>
+  );
+};
+
+ReactDOM.createRoot(document.getElementById('km-root')).render(<App />);
+</script>
+</body>
+</html>
