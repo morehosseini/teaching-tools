@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Building an AI Construction Planning Agent</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0f1117;
+            --surface: #1a1d27;
+            --card: #222639;
+            --border: #2e3347;
+            --accent: #6366f1;
+            --accent2: #8b5cf6;
+            --green: #22c55e;
+            --amber: #f59e0b;
+            --cyan: #06b6d4;
+            --text: #e2e8f0;
+            --muted: #94a3b8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        section {
+            min-height: 100vh;
+            padding: 60px 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 99px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--accent);
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, var(--text) 0%, var(--muted) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: var(--accent);
+        }
+
+        .subtitle {
+            font-size: 1.5rem;
+            color: var(--muted);
+            max-width: 800px;
+            line-height: 1.6;
+            margin-bottom: 40px;
+        }
+
+        .divider {
+            width: 60px;
+            height: 4px;
+            background: var(--accent);
+            margin-bottom: 40px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-top: 20px;
+        }
+
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            padding: 30px;
+            border-radius: 16px;
+            transition: transform 0.3s ease, border-color 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent);
+        }
+
+        .card h3 {
+            font-size: 1.25rem;
+            margin-bottom: 15px;
+            color: var(--accent);
+        }
+
+        .card p {
+            line-height: 1.6;
+            color: var(--muted);
+            font-size: 1rem;
+        }
+
+        .card.green { border-left: 4px solid var(--green); }
+        .card.amber { border-left: 4px solid var(--amber); }
+        .card.cyan { border-left: 4px solid var(--cyan); }
+        .card.purple { border-left: 4px solid var(--accent2); }
+        .card.red { border-left: 4px solid #ef4444; }
+
+        .timeline {
+            margin-top: 40px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .timeline-item {
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+        }
+
+        .timeline-dot {
+            width: 12px;
+            height: 12px;
+            background: var(--accent);
+            border-radius: 50%;
+            margin-top: 6px;
+            flex-shrink: 0;
+        }
+
+        .timeline-content {
+            flex-grow: 1;
+        }
+
+        .quote-box {
+            margin-top: 40px;
+            padding: 24px;
+            background: var(--surface);
+            border-radius: 12px;
+            border-left: 4px solid var(--accent2);
+            font-style: italic;
+            color: var(--text);
+        }
+
+        .nav-dots {
+            position: fixed;
+            right: 40px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            z-index: 100;
+        }
+
+        .nav-dot {
+            width: 10px;
+            height: 10px;
+            background: var(--border);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .nav-dot:hover, .nav-dot.active {
+            background: var(--accent);
+        }
+
+        .slide-number {
+            position: absolute;
+            bottom: 40px;
+            right: 40px;
+            color: var(--muted);
+            font-weight: 600;
+        }
+
+        .flow {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-top: 30px;
+            font-weight: 600;
+            color: var(--accent2);
+        }
+
+        .flow span {
+            background: var(--surface);
+            padding: 8px 16px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        ul {
+            list-style: none;
+        }
+
+        ul li {
+            margin-bottom: 10px;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        ul li::before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: var(--accent);
+        }
+    </style>
+</head>
+<body>
+    <div class="nav-dots">
+        <a href="#slide1" class="nav-dot"></a>
+        <a href="#slide2" class="nav-dot"></a>
+        <a href="#slide3" class="nav-dot"></a>
+        <a href="#slide4" class="nav-dot"></a>
+        <a href="#slide5" class="nav-dot"></a>
+        <a href="#slide6" class="nav-dot"></a>
+        <a href="#slide7" class="nav-dot"></a>
+        <a href="#slide8" class="nav-dot"></a>
+        <a href="#slide9" class="nav-dot"></a>
+        <a href="#slide10" class="nav-dot"></a>
+        <a href="#slide11" class="nav-dot"></a>
+        <a href="#slide12" class="nav-dot"></a>
+        <a href="#slide13" class="nav-dot"></a>
+    </div>
+
+    <section id="slide1">
+        <span class="badge">AACE Class 5/4 · May 2026</span>
+        <h1>Building an AI Construction Planning Agent</h1>
+        <p class="subtitle">From a one-line project brief to a professional CPM schedule — how we designed, critiqued, and deployed an AI planning assistant for the Australian construction industry.</p>
+        <div class="flow">
+            <span>📝 Brief</span> → <span>💬 PIR</span> → <span>✅ Review</span> → <span>📊 WBS+CPM</span> → <span>📑 Excel</span> → <span>🌐 Live App</span>
+        </div>
+        <div class="slide-number">01</div>
+    </section>
+
+    <section id="slide2">
+        <span class="badge">Genesis</span>
+        <h2>Can AI Do What a Planner Does?</h2>
+        <div class="divider"></div>
+        <div class="grid">
+            <div class="card">
+                <h3>The Problem</h3>
+                <p>Construction planning is slow, expert-dependent, and inconsistent. A 10-storey apartment in Melbourne takes weeks just to produce a Class 5 schedule. Junior planners make systematic errors. Clients get inconsistent outputs.</p>
+            </div>
+            <div class="card">
+                <h3>The Hypothesis</h3>
+                <p>An LLM can interpret a brief, ask the right questions, and scaffold a first-draft schedule — grounded in real production rates — faster and more consistently than a blank spreadsheet.</p>
+            </div>
+        </div>
+        <div class="quote-box">
+            "The goal is not to replace the planner. It is to give them a defensible, traceable first draft in minutes."
+        </div>
+        <div class="slide-number">02</div>
+    </section>
+
+    <section id="slide3">
+        <span class="badge">Design</span>
+        <h2>The Five-Stage Workflow</h2>
+        <div class="divider"></div>
+        <div class="grid">
+            <div class="card purple">
+                <h3>1. Brief Interpretation</h3>
+                <p>User types a thin description. Gemini AI reads it, extracts project type, GFA, storeys, location, risk profile, and flags what's missing.</p>
+            </div>
+            <div class="card purple">
+                <h3>2. PIR Dialogue</h3>
+                <p>Progressive Information Request. The AI asks 3-5 targeted questions at a time — not a 20-field form. Each default is explained with a rationale.</p>
+            </div>
+            <div class="card purple">
+                <h3>3. Planning Basis</h3>
+                <p>A formal summary document listing every assumption, default, source, and uncertainty. The planner must explicitly approve before proceeding.</p>
+            </div>
+            <div class="card purple">
+                <h3>4. WBS + Schedule</h3>
+                <p>Library-grounded activity generation. 45–140 activities depending on project type. Three-point durations. CPM critical path calculated deterministically.</p>
+            </div>
+            <div class="card purple">
+                <h3>5. Excel Export</h3>
+                <p>8-tab professional workbook: Executive Summary, PIR, Basis of Schedule, WBS, Full Schedule, Procurement, Risk Register, Validation.</p>
+            </div>
+        </div>
+        <div class="slide-number">03</div>
+    </section>
+
+    <section id="slide4">
+        <span class="badge">Expert Review · Stage 1</span>
+        <h2>We Asked Other AIs to Critique the Plan</h2>
+        <div class="divider"></div>
+        <div class="grid">
+            <div class="card amber">
+                <h3>Grok's Critique</h3>
+                <ul>
+                    <li>Construction is not manufacturing — every site has unique constraints</li>
+                    <li>LLMs cannot guess durations accurately — ground everything in productivity data</li>
+                    <li>Victorian projects need Building Permits, VBA inspections, soil class (AS 2870)</li>
+                    <li>The agent must be brutally transparent about uncertainty</li>
+                </ul>
+            </div>
+            <div class="card cyan">
+                <h3>Gemini's Critique</h3>
+                <ul>
+                    <li>Use RAG for historical benchmarks, not LLM memory</li>
+                    <li>Pre-construction gap: include Design, Approvals, and Procurement phases</li>
+                    <li>Human-in-the-loop is essential — planners do not trust black boxes</li>
+                    <li>Conversational PIR, not a static form</li>
+                </ul>
+            </div>
+        </div>
+        <div class="quote-box">
+            💡 Result: We scrapped the original 'AI generates schedule' concept and pivoted to 'AI scaffolds a planner's first draft.'
+        </div>
+        <div class="slide-number">04</div>
+    </section>
+
+    <section id="slide5">
+        <span class="badge">Key Design Decision</span>
+        <h2>The Pivot</h2>
+        <div class="divider"></div>
+        <div class="grid">
+            <div class="card red">
+                <h3>❌ What We Abandoned</h3>
+                <p>Full automation. AI generates a complete schedule and hands it over. No human review. LLM calculates durations from memory. Single-step output. Black box.</p>
+            </div>
+            <div class="card green">
+                <h3>✅ What We Built</h3>
+                <p>Scaffolded planning. AI drafts, human approves. Two mandatory approval gates. Deterministic CPM engine. Production rates from static CSV library. Full audit trail. Every assumption is visible.</p>
+            </div>
+        </div>
+        <div class="timeline">
+            <div class="timeline-item"><div class="timeline-dot"></div><div class="timeline-content">Stage 1 Feedback → Pivot to Human-in-the-Loop</div></div>
+            <div class="timeline-item"><div class="timeline-dot"></div><div class="timeline-content">Stage 2 Feedback → Add Conversational PIR</div></div>
+            <div class="timeline-item"><div class="timeline-dot"></div><div class="timeline-content">Implementation → Streamlit + Gemini + Python Engine</div></div>
+            <div class="timeline-item"><div class="timeline-dot"></div><div class="timeline-content">Deployment → Streamlit Cloud + GitHub</div></div>
+        </div>
+        <div class="slide-number">05</div>
+    </section>
+
+    <section id="slide6">
+        <span class="badge">Technical Design</span>
+        <h2>The Architecture</h2>
+        <div class="divider"></div>
+        <div class="grid">
+            <div class="card purple">
+                <h3>🤖 LLM Layer (llm_service.py)</h3>
+                <p>Gemini 2.5 Pro handles: brief interpretation, PIR question generation, WBS scaffolding, narrative writing. It NEVER calculates durations or CPM.</p>
+            </div>
+            <div class="card green">
+                <h3>⚙️ Engine Layer (core/)</h3>
+                <p>Deterministic Python handles: CPM forward/backward pass, float calculation, calendar arithmetic (VIC public holidays, RDOs), Pydantic validation.</p>
+            </div>
+            <div class="card cyan">
+                <h3>🖥️ UI Layer (pages/)</h3>
+                <p>Streamlit pages handle: step navigation, session state, human approval gates, form rendering, chart display.</p>
+            </div>
+        </div>
+        <div class="quote-box">
+            Key principle: The LLM is the 'interpreter and writer.' Python is the 'calculator.' They never swap roles.
+        </div>
+        <div class="slide-number">06</div>
+    </section>
+
+    <section id="slide7">
+        <span class="badge">Data Grounding</span>
+        <h2>The Library System</h2>
+        <div class="divider"></div>
+        <p class="subtitle">Every duration in the schedule traces back to a static, version-controlled data file — not an LLM prediction.</p>
+        <div class="grid">
+            <div class="card">
+                <h3>📊 production_rates.csv</h3>
+                <p>Activity-level rates: m²/day, linear m/day, floors/week. Source: industry benchmarks. Human review required flag when not found.</p>
+            </div>
+            <div class="card">
+                <h3>📋 wbs_templates.json</h3>
+                <p>Pre-built WBS structures for 11 project typologies: detached house, high-rise residential, commercial fitout, warehouse, school extension...</p>
+            </div>
+            <div class="card">
+                <h3>🔗 construction_logic.csv</h3>
+                <p>Trade sequencing rules: waterproofing before tiling, structure before envelope, services rough-in before linings.</p>
+            </div>
+            <div class="card">
+                <h3>⏱️ procurement_leads.csv</h3>
+                <p>Long-lead items: structural steel 8–14 weeks, facade systems 16–24 weeks, lifts 20–30 weeks, switchboards 10–16 weeks.</p>
+            </div>
+        </div>
+        <div class="slide-number">07</div>
+    </section>
+
+    <section id="slide8">
+        <span class="badge">Bug Fix · Real Example</span>
+        <h2>The GFA Bug Story</h2>
+        <div class="divider"></div>
+        <div class="timeline">
+            <div class="timeline-item"><div class="timeline-dot"></div><div class="timeline-content"><strong>The Brief:</strong> "User entered: '12-storey apartment tower, each floor 780 m²'"</div></div>
+            <div class="timeline-item"><div class="timeline-dot"></div><div class="timeline-content"><strong>The LLM Output:</strong> Gemini returned GFA = 4,680 m² (wrong — it calculated 6 floors × 780)</div></div>
+            <div class="timeline-item"><div class="timeline-dot"></div><div class="timeline-content"><strong>The Consequence:</strong> Wrong GFA → wrong project scale → wrong activity count → wrong schedule duration</div></div>
+            <div class="timeline-item"><div class="timeline-dot"></div><div class="timeline-content"><strong>The Fix:</strong> We added a deterministic cross-check in _normalise_project_classification(). Python calculates: 12 × 780 = 9,360 m². The LLM result is overridden.</div></div>
+        </div>
+        <div class="quote-box">
+            Lesson: Never trust LLM arithmetic. Always cross-check with deterministic code.
+        </div>
+        <div class="slide-number">08</div>
+    </section>
+
+    <section id="slide10">
+        <span class="badge">Live Tool</span>
+        <h2>What the App Does (Demo)</h2>
+        <div class="divider"></div>
+        <div class="grid">
+            <div class="card">
+                <h3>Step 1: Enter Brief</h3>
+                <p>"15-storey residential tower in Southbank, Melbourne, each floor 820 m², concrete frame, 2-level basement"</p>
+            </div>
+            <div class="card">
+                <h3>Step 2: Interpretation</h3>
+                <p>AI returns: high_rise_residential, GFA 12,300 m², risk: high, 8 missing info items flagged</p>
+            </div>
+            <div class="card">
+                <h3>Step 3: Answer PIR</h3>
+                <p>Soil class H1, concrete frame, 5-day calendar, planning permit 18 weeks, facade procurement 20 weeks</p>
+            </div>
+            <div class="card">
+                <h3>Step 4: Approve Basis</h3>
+                <p>Read and approve the planning assumptions document</p>
+            </div>
+            <div class="card">
+                <h3>Step 5: View Schedule</h3>
+                <p>120 activities, critical path identified, P50: 156 weeks, P80: 178 weeks</p>
+            </div>
+            <div class="card">
+                <h3>Step 6: Export</h3>
+                <p>Download 8-tab Excel workbook</p>
+            </div>
+        </div>
+        <div class="slide-number">10</div>
+    </section>
+
+    <section id="slide11">
+        <span class="badge">Philosophy</span>
+        <h2>Key Design Principles</h2>
+        <div class="divider"></div>
+        <div class="grid">
+            <div class="card">
+                <h3>1. Transparency First</h3>
+                <p>Every assumption is visible. Every default is explained. No black boxes.</p>
+            </div>
+            <div class="card">
+                <h3>2. Human Approval Gates</h3>
+                <p>The planner must approve the Planning Basis before WBS generation.</p>
+            </div>
+            <div class="card">
+                <h3>3. Library-Grounded</h3>
+                <p>Production rates come from CSV files, not LLM memory.</p>
+            </div>
+            <div class="card">
+                <h3>4. Conservative by Default</h3>
+                <p>When uncertain, the AI flags high risk and asks — it does not guess.</p>
+            </div>
+            <div class="card">
+                <h3>5. Deterministic Maths</h3>
+                <p>CPM, float, dates, and GFA calculations are always Python, never LLM.</p>
+            </div>
+            <div class="card">
+                <h3>6. Full Audit Trail</h3>
+                <p>Every edit and override is logged with source and rationale.</p>
+            </div>
+        </div>
+        <div class="slide-number">11</div>
+    </section>
+
+    <section id="slide12">
+        <span class="badge">For You</span>
+        <h2>What Students Can Explore</h2>
+        <div class="divider"></div>
+        <div class="grid">
+            <div class="card purple">
+                <h3>📦 App Code Package</h3>
+                <p>The complete Python source: 8 core modules, 6 UI pages, 6 library files. Read the code, run it locally, extend it.</p>
+            </div>
+            <div class="card cyan">
+                <h3>📜 History Package</h3>
+                <p>The planning documents, expert critique summaries, architecture analysis, and design decisions. See how the thinking evolved.</p>
+            </div>
+            <div class="card green">
+                <h3>🌐 Live App</h3>
+                <p>Try a real project brief. See what the AI generates and where it asks for human input. Try to break it.</p>
+            </div>
+        </div>
+        <div class="quote-box">
+            Questions: Where does the AI make decisions vs Python? What happens when you give an ambiguous brief?
+        </div>
+        <div class="slide-number">12</div>
+    </section>
+
+    <section id="slide13">
+        <span class="badge">Takeaways</span>
+        <h2>Summary</h2>
+        <div class="divider"></div>
+        <div class="grid">
+            <div class="card">
+                <h3>🤝 AI + Human Partnership</h3>
+                <p>The most effective AI tools augment expert judgment. Every decision was made to keep the human planner in control.</p>
+            </div>
+            <div class="card">
+                <h3>🔬 Iterative Design</h3>
+                <p>The final app looks nothing like the first plan. Two rounds of AI critique produced a more robust tool.</p>
+            </div>
+            <div class="card">
+                <h3>⚙️ Hybrid Intelligence</h3>
+                <p>LLMs excel at language. Python excels at logic. Combining them intelligently is the engineering challenge.</p>
+            </div>
+            <div class="card">
+                <h3>🚀 Rapid Deployment</h3>
+                <p>From concept to live web app in weeks, using free tools: GitHub, Streamlit Cloud, Google AI Studio.</p>
+            </div>
+        </div>
+        <div class="quote-box" style="text-align: center; border-left: none; border-top: 4px solid var(--accent);">
+            Live app: <a href="https://teaching-tools-falzwuuzw6rq8ntn93prcg.streamlit.app" style="color: var(--cyan);">teaching-tools.streamlit.app</a><br>
+            Landing page: <a href="https://morehosseini.github.io/teaching-tools/" style="color: var(--cyan);">morehosseini.github.io/teaching-tools/</a>
+        </div>
+        <div class="slide-number">13</div>
+    </section>
+</body>
+</html>
